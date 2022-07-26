@@ -1,8 +1,9 @@
 use anchor_lang::prelude::*;
+use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{Mint, Token, TokenAccount};
 
 use crate::error::StakingError;
-use crate::utils::{self, now_ts};
+use crate::utils::{self, close_ata, now_ts};
 
 use crate::state::*;
 
@@ -51,15 +52,20 @@ pub struct Unstake<'info> {
     pub farmer_vault: Box<Account<'info, TokenAccount>>,
 
     #[account(
-        mut,
+        init_if_needed,
+        payer = owner,
         associated_token::mint = gem_mint,
         associated_token::authority = owner,
     )]
     pub gem_owner_ata: Box<Account<'info, TokenAccount>>,
 
+    #[account(mut)]
     pub owner: Signer<'info>,
 
+    pub rent: Sysvar<'info, Rent>,
+    pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
 }
 
 impl<'info> Unstake<'info> {
@@ -96,6 +102,14 @@ pub fn handler<'info>(ctx: Context<'_, '_, '_, 'info, Unstake<'info>>) -> Result
         .decrease_reward_rate(receipt.reward_rate)?;
 
     ctx.accounts.stake_receipt.end_ts = Some(now);
+
+    close_ata(
+        ctx.accounts.farmer_vault.to_account_info(),
+        ctx.accounts.farmer.to_account_info(),
+        ctx.accounts.owner.to_account_info(),
+        ctx.accounts.token_program.to_account_info(),
+        &ctx.accounts.farmer.seeds(),
+    )?;
 
     Ok(())
 }

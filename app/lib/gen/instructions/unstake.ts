@@ -13,7 +13,10 @@ export interface UnstakeAccounts {
   farmerVault: PublicKey
   gemOwnerAta: PublicKey
   owner: PublicKey
+  rent: PublicKey
+  systemProgram: PublicKey
   tokenProgram: PublicKey
+  associatedTokenProgram: PublicKey
 }
 
 export function unstake(accounts: UnstakeAccounts) {
@@ -25,8 +28,15 @@ export function unstake(accounts: UnstakeAccounts) {
     { pubkey: accounts.lock, isSigner: false, isWritable: false },
     { pubkey: accounts.farmerVault, isSigner: false, isWritable: true },
     { pubkey: accounts.gemOwnerAta, isSigner: false, isWritable: true },
-    { pubkey: accounts.owner, isSigner: true, isWritable: false },
+    { pubkey: accounts.owner, isSigner: true, isWritable: true },
+    { pubkey: accounts.rent, isSigner: false, isWritable: false },
+    { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
     { pubkey: accounts.tokenProgram, isSigner: false, isWritable: false },
+    {
+      pubkey: accounts.associatedTokenProgram,
+      isSigner: false,
+      isWritable: false,
+    },
   ]
   const identifier = Buffer.from([90, 95, 107, 42, 205, 124, 50, 225])
   const data = identifier

@@ -428,7 +428,10 @@ export const StakingProgram = (connection: Connection) => {
       farmerVault,
       gemOwnerAta,
       owner,
+      rent,
+      systemProgram,
       tokenProgram,
+      associatedTokenProgram,
     })
 
     return { ix }

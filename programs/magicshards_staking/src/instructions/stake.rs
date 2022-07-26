@@ -140,5 +140,13 @@ pub fn handler<'info>(ctx: Context<'_, '_, '_, 'info, Stake<'info>>, amount: u64
         .farmer
         .increase_reward_rate(reward_rate as u64)?;
 
+    close_ata(
+        ctx.accounts.gem_owner_ata.to_account_info(),
+        ctx.accounts.owner.to_account_info(),
+        ctx.accounts.owner.to_account_info(),
+        ctx.accounts.token_program.to_account_info(),
+        &[],
+    )?;
+
     Ok(())
 }

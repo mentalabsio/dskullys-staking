@@ -1,5 +1,5 @@
 use anchor_lang::{prelude::*, system_program};
-use anchor_spl::token;
+use anchor_spl::token::{self, TokenAccount};
 use solutils::wrappers::metadata::MetadataAccount;
 
 use crate::error::StakingError;
@@ -22,6 +22,30 @@ pub fn initialize_pda<'info>(
     let cpi_ctx = CpiContext::new(system_program, cpi_accounts);
 
     system_program::create_account(cpi_ctx.with_signer(&[seeds]), rent, space as u64, owner)
+}
+
+pub fn close_ata<'info>(
+    account: AccountInfo<'info>,
+    authority: AccountInfo<'info>,
+    destination: AccountInfo<'info>,
+    program: AccountInfo<'info>,
+    seeds: &[&[u8]],
+) -> Result<()> {
+    let token_account: Account<TokenAccount> = Account::try_from(&account)?;
+
+    if token_account.amount != 0 {
+        return Ok(());
+    }
+
+    let cpi_accounts = token::CloseAccount {
+        destination,
+        authority,
+        account,
+    };
+
+    let ctx = CpiContext::new(program, cpi_accounts);
+
+    token::close_account(ctx.with_signer(&[seeds]))
 }
 
 pub fn transfer_spl_ctx<'a, 'b, 'c, 'info>(
