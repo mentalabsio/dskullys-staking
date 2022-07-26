@@ -37,11 +37,11 @@ pub struct CreateFarm<'info> {
 pub fn handler(ctx: Context<CreateFarm>) -> Result<()> {
     let reward = Reward::new(ctx.accounts.reward_mint.key());
 
-    *ctx.accounts.farm = Farm {
+    *ctx.accounts.farm = Farm::new(
+        ctx.accounts.authority.key(),
         reward,
-        authority: ctx.accounts.authority.key(),
-        bump: [*ctx.bumps.get("farm").unwrap()],
-    };
+        *ctx.bumps.get("farm").unwrap(),
+    );
 
     msg!("Initialized new farm at {}", ctx.accounts.farm.key());
 

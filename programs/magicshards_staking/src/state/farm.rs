@@ -67,11 +67,21 @@ pub struct Farm {
     pub authority: Pubkey,
     pub reward: Reward,
     pub bump: [u8; 1],
+    _reserved: [u8; 64],
 }
 
 impl Farm {
-    pub const LEN: usize = 32 + Reward::LEN + 1;
+    pub const LEN: usize = 32 + Reward::LEN + 1 + 64;
     pub const PREFIX: &'static [u8] = b"farm";
+
+    pub fn new(authority: Pubkey, reward: Reward, bump: u8) -> Self {
+        Self {
+            authority,
+            reward,
+            bump: [bump],
+            _reserved: [0; 64],
+        }
+    }
 
     pub fn seeds(&self) -> [&[u8]; 4] {
         [

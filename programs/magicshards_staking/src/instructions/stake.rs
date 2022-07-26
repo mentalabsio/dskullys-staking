@@ -94,11 +94,6 @@ pub fn handler<'info>(ctx: Context<'_, '_, '_, 'info, Stake<'info>>, amount: u64
         ctx.remaining_accounts,
     )?;
 
-    if let WhitelistType::Buff = whitelist_proof.ty {
-        msg!("Cannot stake a buff NFT.");
-        return Err(error!(StakingError::InvalidWhitelistType));
-    }
-
     // Lock the nft to the farmer account.
     ctx.accounts.lock_gem(amount)?;
 
@@ -111,39 +106,31 @@ pub fn handler<'info>(ctx: Context<'_, '_, '_, 'info, Stake<'info>>, amount: u64
 
     let stake_receipt = &mut ctx.accounts.stake_receipt;
 
-    if stake_receipt.farmer == Pubkey::default() {
-        **stake_receipt = StakeReceipt {
-            end_ts: None,
-            start_ts: now_ts,
-            lock: ctx.accounts.lock.key(),
-            farmer: ctx.accounts.farmer.key(),
-            mint: ctx.accounts.gem_mint.key(),
-            buff: None,
-            reward_rate,
-            amount,
-        };
-    } else {
-        // Receipt account already existed.
+    if stake_receipt.farmer != Pubkey::default() {
+        // Receipt account is already initialized.
         // We're either trying to stake an NFT again, or just trying to stake more fungible tokens.
-        match stake_receipt.end_ts {
-            // This gem has already been unstaked.
-            Some(end_ts) => {
-                let cooldown = ctx.accounts.lock.cooldown;
-                require_gte!(now_ts, end_ts + cooldown, StakingError::CooldownIsNotOver);
 
-                // Here the cooldown is already over, so just update the receipt with the new
-                // information.
-                stake_receipt.end_ts = None;
-                stake_receipt.start_ts = now_ts;
-                stake_receipt.lock = ctx.accounts.lock.key();
-                stake_receipt.reward_rate = reward_rate;
-                stake_receipt.amount = amount;
-            }
-            None => {
-                return Err(error!(StakingError::GemStillStaked));
-            }
+        require_keys_eq!(stake_receipt.farmer, ctx.accounts.farmer.key());
+        require_keys_eq!(stake_receipt.mint, ctx.accounts.gem_mint.key());
+        require!(!stake_receipt.is_running(), StakingError::GemStillStaked);
+
+        if let Some(end_ts) = stake_receipt.end_ts {
+            require_gte!(
+                now_ts,
+                end_ts + ctx.accounts.lock.cooldown,
+                StakingError::CooldownIsNotOver
+            );
         }
     }
+
+    **stake_receipt = StakeReceipt::new(
+        ctx.accounts.farmer.key(),
+        ctx.accounts.gem_mint.key(),
+        ctx.accounts.lock.key(),
+        now_ts,
+        amount,
+        reward_rate,
+    );
 
     let reserved_amount = reward_rate as u64 * ctx.accounts.lock.duration;
 

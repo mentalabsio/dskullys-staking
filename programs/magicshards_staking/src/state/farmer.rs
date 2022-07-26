@@ -11,11 +11,12 @@ pub struct Farmer {
     accrued_rewards: u64,
     total_reward_rate: u64,
     last_update: u64,
-    pub bump: [u8; 1],
+    bump: [u8; 1],
+    _reserved: [u8; 64],
 }
 
 impl Farmer {
-    pub const LEN: usize = 32 + 32 + 8 + 8 + 8 + 1;
+    pub const LEN: usize = 32 + 32 + 8 + 8 + 8 + 1 + 64;
     pub const PREFIX: &'static [u8] = b"farmer";
 
     pub fn seeds(&self) -> [&[u8]; 4] {
@@ -35,6 +36,7 @@ impl Farmer {
             total_reward_rate: 0,
             last_update: now_ts()?,
             bump: [bump],
+            _reserved: [0; 64],
         })
     }
 
