@@ -13,7 +13,7 @@ pub struct AddManager<'info> {
         seeds = [
             FarmManager::PREFIX,
             farm.key().as_ref(),
-            authority.key().as_ref(),
+            manager_authority.key().as_ref(),
         ],
         bump,
     )]
