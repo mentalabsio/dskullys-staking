@@ -38,6 +38,7 @@ pub fn find_lock_address<T: AsRef<[u8]>>(farm: T, config: LockConfig) -> Pubkey 
     .0
 }
 
+#[allow(dead_code)]
 pub fn find_stake_receipt_address<T: AsRef<[u8]>>(farmer: T, mint: T) -> Pubkey {
     Pubkey::find_program_address(
         &[b"stake_receipt", farmer.as_ref(), mint.as_ref()],

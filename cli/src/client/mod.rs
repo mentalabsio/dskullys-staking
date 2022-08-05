@@ -1,26 +1,31 @@
-use crate::utils::{find_accounts, find_accounts_lazy, memcmp};
 use anchor_client::{
     anchor_lang::{solana_program, system_program},
-    solana_sdk::{commitment_config::CommitmentConfig, pubkey::Pubkey, signer::Signer},
+    solana_sdk::{
+        commitment_config::CommitmentConfig, instruction::AccountMeta, pubkey::Pubkey,
+        signer::Signer,
+    },
     Cluster, Program,
 };
 use anyhow::{Context, Result};
 use magicshards_staking::{
     accounts,
-    state::{Farm, FarmManager, WhitelistProof, WhitelistType},
+    instructions::LockConfig,
+    state::{Farm, FarmManager, Lock, WhitelistProof, WhitelistType},
 };
 use std::rc::Rc;
 
-use pda::find_farm_manager_address;
+use pda::*;
+use utils::*;
 
-pub mod pda;
+mod pda;
+mod utils;
 
-pub struct Client {
+pub struct StakingClient {
     program: Program,
     payer: Rc<dyn Signer>,
 }
 
-impl Client {
+impl StakingClient {
     pub fn new(cluster: Cluster, payer: Rc<dyn Signer>) -> Result<Self> {
         let client = anchor_client::Client::new_with_options(
             cluster,
@@ -59,7 +64,7 @@ impl Client {
         todo!("farm stats")
     }
 
-    pub fn create_farm(&self, reward_mint: Pubkey) -> Result<()> {
+    pub fn create_farm(&self, reward_mint: Pubkey) -> Result<Pubkey> {
         let farm = pda::find_farm_address(self.payer.pubkey(), reward_mint);
         let farm_vault =
             anchor_spl::associated_token::get_associated_token_address(&farm, &reward_mint);
@@ -96,7 +101,7 @@ impl Client {
             .args(magicshards_staking::instruction::AddManager)
             .send()?;
 
-        Ok(())
+        Ok(farm)
     }
 
     pub fn add_manager(&self, farm: Pubkey, manager_owner: Option<Pubkey>) -> Result<()> {
@@ -236,5 +241,42 @@ impl Client {
         );
 
         Ok(())
+    }
+
+    pub fn create_locks(&self, farm: Pubkey, locks: &[LockConfig]) -> Result<()> {
+        let farm_manager = pda::find_farm_manager_address(farm, self.payer.pubkey());
+
+        let accs = accounts::CreateLocks {
+            farm,
+            farm_manager,
+            authority: self.payer.pubkey(),
+            system_program: system_program::ID,
+        };
+
+        let locks_meta = locks
+            .iter()
+            .map(|&config| AccountMeta::new(pda::find_lock_address(farm, config), false))
+            .collect::<Vec<_>>();
+
+        let count = locks.len();
+
+        self.program
+            .request()
+            .accounts(accs)
+            .accounts(locks_meta)
+            .args(magicshards_staking::instruction::CreateLocks {
+                lock_configs: locks.into(),
+            })
+            .signer(&*self.payer)
+            .send()?;
+
+        // TODO: move to output.
+        println!("{count} locks created.");
+
+        Ok(())
+    }
+
+    pub fn list_locks(&self, farm: Pubkey) -> Result<Vec<(Pubkey, Lock)>> {
+        find_accounts(&self.program, &[memcmp(8, farm.as_ref())])
     }
 }

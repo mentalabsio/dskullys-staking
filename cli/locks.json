@@ -1,0 +1,12 @@
+[
+  {
+    "bonusFactor": 0,
+    "cooldown": 0,
+    "duration": 0
+  },
+  {
+    "bonusFactor": 25,
+    "cooldown": 3600,
+    "duration": 86400
+  }
+]
