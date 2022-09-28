@@ -21,7 +21,12 @@ pub fn initialize_pda<'info>(
 
     let cpi_ctx = CpiContext::new(system_program, cpi_accounts);
 
-    system_program::create_account(cpi_ctx.with_signer(&[seeds]), rent, space as u64, owner)
+    system_program::create_account(
+        cpi_ctx.with_signer(&[seeds]),
+        rent,
+        space as u64,
+        owner,
+    )
 }
 
 pub fn close_ata<'info>(

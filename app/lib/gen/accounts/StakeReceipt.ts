@@ -7,7 +7,6 @@ import { PROGRAM_ID } from "../programId"
 export interface StakeReceiptFields {
   farmer: PublicKey
   mint: PublicKey
-  lock: PublicKey
   startTs: BN
   endTs: BN | null
   amount: BN
@@ -18,7 +17,6 @@ export interface StakeReceiptFields {
 export interface StakeReceiptJSON {
   farmer: string
   mint: string
-  lock: string
   startTs: string
   endTs: string | null
   amount: string
@@ -29,7 +27,6 @@ export interface StakeReceiptJSON {
 export class StakeReceipt {
   readonly farmer: PublicKey
   readonly mint: PublicKey
-  readonly lock: PublicKey
   readonly startTs: BN
   readonly endTs: BN | null
   readonly amount: BN
@@ -43,7 +40,6 @@ export class StakeReceipt {
   static readonly layout = borsh.struct([
     borsh.publicKey("farmer"),
     borsh.publicKey("mint"),
-    borsh.publicKey("lock"),
     borsh.u64("startTs"),
     borsh.option(borsh.u64(), "endTs"),
     borsh.u64("amount"),
@@ -54,7 +50,6 @@ export class StakeReceipt {
   constructor(fields: StakeReceiptFields) {
     this.farmer = fields.farmer
     this.mint = fields.mint
-    this.lock = fields.lock
     this.startTs = fields.startTs
     this.endTs = fields.endTs
     this.amount = fields.amount
@@ -106,7 +101,6 @@ export class StakeReceipt {
     return new StakeReceipt({
       farmer: dec.farmer,
       mint: dec.mint,
-      lock: dec.lock,
       startTs: dec.startTs,
       endTs: dec.endTs,
       amount: dec.amount,
@@ -119,7 +113,6 @@ export class StakeReceipt {
     return {
       farmer: this.farmer.toString(),
       mint: this.mint.toString(),
-      lock: this.lock.toString(),
       startTs: this.startTs.toString(),
       endTs: (this.endTs && this.endTs.toString()) || null,
       amount: this.amount.toString(),
@@ -132,7 +125,6 @@ export class StakeReceipt {
     return new StakeReceipt({
       farmer: new PublicKey(obj.farmer),
       mint: new PublicKey(obj.mint),
-      lock: new PublicKey(obj.lock),
       startTs: new BN(obj.startTs),
       endTs: (obj.endTs && new BN(obj.endTs)) || null,
       amount: new BN(obj.amount),

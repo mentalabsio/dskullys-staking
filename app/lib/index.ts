@@ -1,106 +1,96 @@
-import { BN, utils, web3 } from "@project-serum/anchor"
+import { BN, utils, web3 } from "@project-serum/anchor";
 import {
   AccountMeta,
   Connection,
   PublicKey,
   SYSVAR_RENT_PUBKEY,
-} from "@solana/web3.js"
+} from "@solana/web3.js";
 
-import { Farm, StakeReceipt } from "./gen/accounts"
+import { Farm } from "./gen/accounts";
 import {
   addManager,
   addToWhitelist,
   claimRewards,
   createFarm,
-  createLocks,
   fundReward,
   initializeFarmer,
   removeFromWhitelist,
   stake,
   unstake,
-} from "./gen/instructions"
-import { StakeArgs } from "./gen/instructions/stake"
-import { WhitelistTypeKind } from "./gen/types"
-import { LockConfigFields } from "./gen/types/LockConfig"
+} from "./gen/instructions";
+import { StakeArgs } from "./gen/instructions/stake";
+import { WhitelistTypeKind } from "./gen/types";
 import {
   findWhitelistProofAddress,
   findFarmAddress,
   findFarmerAddress,
   findFarmManagerAddress,
-  findLockAddress,
   findStakeReceiptAddress,
-} from "./pda"
-import { tryFindCreator } from "./utils"
+} from "./pda";
+import { tryFindCreator } from "./utils";
 
 interface ICreateFarm {
-  authority: PublicKey
-  rewardMint: PublicKey
+  authority: PublicKey;
+  rewardMint: PublicKey;
 }
 
 interface IAddToWhitelist {
-  farm: PublicKey
-  creatorOrMint: PublicKey
-  authority: PublicKey
-  whitelistType: WhitelistTypeKind
+  farm: PublicKey;
+  creatorOrMint: PublicKey;
+  authority: PublicKey;
+  whitelistType: WhitelistTypeKind;
   rewardRate: {
-    tokenAmount: BN
-    intervalInSeconds: BN
-  }
+    tokenAmount: BN;
+    intervalInSeconds: BN;
+  };
 }
 
 interface IRemoveFromWhitelist {
-  farm: PublicKey
-  addressToRemove: PublicKey
-  authority: PublicKey
-}
-
-interface ICreateLocks {
-  lockConfigs: LockConfigFields[]
-  farm: PublicKey
-  authority: PublicKey
+  farm: PublicKey;
+  addressToRemove: PublicKey;
+  authority: PublicKey;
 }
 
 interface IFundReward {
-  amount: BN
-  farm: PublicKey
-  authority: PublicKey
+  amount: BN;
+  farm: PublicKey;
+  authority: PublicKey;
 }
 
 interface IAddManager {
-  farm: PublicKey
-  newManagerAuthority: PublicKey
-  farmAuthority: PublicKey
+  farm: PublicKey;
+  newManagerAuthority: PublicKey;
+  farmAuthority: PublicKey;
 }
 
 interface IInitializeFarmer {
-  farm: PublicKey
-  owner: PublicKey
+  farm: PublicKey;
+  owner: PublicKey;
 }
 
 interface IStake {
-  farm: PublicKey
-  mint: PublicKey
-  lock: PublicKey
-  args: StakeArgs
-  owner: PublicKey
+  farm: PublicKey;
+  mint: PublicKey;
+  args: StakeArgs;
+  owner: PublicKey;
 }
 
 interface IUnstake {
-  farm: PublicKey
-  mint: PublicKey
-  owner: PublicKey
+  farm: PublicKey;
+  mint: PublicKey;
+  owner: PublicKey;
 }
 
 interface IClaimRewards {
-  farm: PublicKey
-  authority: PublicKey
+  farm: PublicKey;
+  authority: PublicKey;
 }
 
 export const StakingProgram = (connection: Connection) => {
-  const systemProgram = web3.SystemProgram.programId
-  const tokenProgram = utils.token.TOKEN_PROGRAM_ID
-  const associatedTokenProgram = utils.token.ASSOCIATED_PROGRAM_ID
-  const rent = SYSVAR_RENT_PUBKEY
+  const systemProgram = web3.SystemProgram.programId;
+  const tokenProgram = utils.token.TOKEN_PROGRAM_ID;
+  const associatedTokenProgram = utils.token.ASSOCIATED_PROGRAM_ID;
+  const rent = SYSVAR_RENT_PUBKEY;
 
   const createFarmInstruction = async ({
     rewardMint,
@@ -109,17 +99,17 @@ export const StakingProgram = (connection: Connection) => {
     const farm = findFarmAddress({
       authority,
       rewardMint,
-    })
+    });
 
     const farmManager = findFarmManagerAddress({
       farm,
       authority,
-    })
+    });
 
     const farmVault = await utils.token.associatedAddress({
       mint: rewardMint,
       owner: farm,
-    })
+    });
 
     const createFarmIx = createFarm({
       farm,
@@ -131,7 +121,7 @@ export const StakingProgram = (connection: Connection) => {
       systemProgram,
       tokenProgram,
       associatedTokenProgram,
-    })
+    });
 
     const addManagerIx = addManager({
       farm,
@@ -139,10 +129,10 @@ export const StakingProgram = (connection: Connection) => {
       authority,
       managerAuthority: authority,
       systemProgram,
-    })
+    });
 
-    return { ix: [createFarmIx, addManagerIx] }
-  }
+    return { ix: [createFarmIx, addManagerIx] };
+  };
 
   const createAddManagerInstruction = async ({
     farm,
@@ -152,7 +142,7 @@ export const StakingProgram = (connection: Connection) => {
     const farmManager = findFarmManagerAddress({
       farm,
       authority: newManagerAuthority,
-    })
+    });
 
     const ix = addManager({
       farm,
@@ -160,62 +150,32 @@ export const StakingProgram = (connection: Connection) => {
       managerAuthority: newManagerAuthority,
       authority: farmAuthority,
       systemProgram,
-    })
+    });
 
-    return { ix }
-  }
-
-  const createLocksInstruction = async ({
-    farm,
-    lockConfigs,
-    authority,
-  }: ICreateLocks) => {
-    const farmManager = findFarmManagerAddress({
-      farm,
-      authority: authority,
-    })
-
-    const ix = createLocks(
-      { lockConfigs },
-      {
-        farm,
-        farmManager,
-        authority: authority,
-        systemProgram,
-      }
-    )
-
-    const lockAccountMetas: AccountMeta[] = lockConfigs.map((config) => {
-      const lockAddress = findLockAddress({ config, farm })
-      return { pubkey: lockAddress, isSigner: false, isWritable: true }
-    })
-
-    ix.keys.push(...lockAccountMetas)
-
-    return { ix }
-  }
+    return { ix };
+  };
 
   const createFundRewardInstruction = async ({
     amount,
     farm,
     authority,
   }: IFundReward) => {
-    const farmAccount = await Farm.fetch(connection, farm)
+    const farmAccount = await Farm.fetch(connection, farm);
 
     const farmManager = findFarmManagerAddress({
       farm,
       authority: authority,
-    })
+    });
 
     const farmVault = await utils.token.associatedAddress({
       mint: farmAccount.reward.mint,
       owner: farm,
-    })
+    });
 
     const managerAta = await utils.token.associatedAddress({
       mint: farmAccount.reward.mint,
       owner: authority,
-    })
+    });
 
     const ix = fundReward(
       { amount },
@@ -228,10 +188,10 @@ export const StakingProgram = (connection: Connection) => {
         authority: authority,
         tokenProgram,
       }
-    )
+    );
 
-    return { ix }
-  }
+    return { ix };
+  };
 
   const createAddToWhitelistInstruction = async ({
     farm,
@@ -243,10 +203,10 @@ export const StakingProgram = (connection: Connection) => {
     const farmManager = findFarmManagerAddress({
       farm,
       authority,
-    })
-    const whitelistProof = findWhitelistProofAddress({ creatorOrMint, farm })
+    });
+    const whitelistProof = findWhitelistProofAddress({ creatorOrMint, farm });
 
-    const { tokenAmount, intervalInSeconds } = rewardRate
+    const { tokenAmount, intervalInSeconds } = rewardRate;
 
     const ix = addToWhitelist(
       { rewardRate: tokenAmount.div(intervalInSeconds), whitelistType },
@@ -258,10 +218,10 @@ export const StakingProgram = (connection: Connection) => {
         authority,
         systemProgram,
       }
-    )
+    );
 
-    return { ix }
-  }
+    return { ix };
+  };
 
   const createRemoveFromWhitelistInstruction = ({
     farm,
@@ -271,8 +231,8 @@ export const StakingProgram = (connection: Connection) => {
     const whitelistProof = findWhitelistProofAddress({
       farm,
       creatorOrMint: addressToRemove,
-    })
-    const farmManager = findFarmManagerAddress({ farm, authority })
+    });
+    const farmManager = findFarmManagerAddress({ farm, authority });
 
     const ix = removeFromWhitelist({
       farm,
@@ -280,68 +240,67 @@ export const StakingProgram = (connection: Connection) => {
       whitelistProof,
       systemProgram,
       farmManager,
-    })
+    });
 
-    return { ix }
-  }
+    return { ix };
+  };
 
   const createInitializeFarmerInstruction = async ({
     farm,
     owner,
   }: IInitializeFarmer) => {
-    const farmer = findFarmerAddress({ farm, owner })
+    const farmer = findFarmerAddress({ farm, owner });
 
     const ix = initializeFarmer({
       farm,
       farmer,
       owner,
       systemProgram,
-    })
+    });
 
-    return { ix }
-  }
+    return { ix };
+  };
 
   const createStakeInstruction = async ({
     owner,
     farm,
-    lock,
     mint,
     args,
   }: IStake) => {
-    const farmer = findFarmerAddress({ farm, owner })
+    const farmer = findFarmerAddress({ farm, owner });
 
     // Initially we assume we're staking a fungible token.
-    let creatorOrMint = mint
-    let metadata: AccountMeta | undefined
+    let creatorOrMint = mint;
+    let metadata: AccountMeta | undefined;
 
-    const foundMetadata = await tryFindCreator(connection, mint)
+    const foundMetadata = await tryFindCreator(connection, mint);
 
     if (foundMetadata) {
-      const { metadataAddress, creatorAddress } = foundMetadata
+      const { metadataAddress, creatorAddress } = foundMetadata;
       metadata = {
         pubkey: metadataAddress,
         isSigner: false,
         isWritable: false,
-      }
-      creatorOrMint = creatorAddress
+      };
+      creatorOrMint = creatorAddress;
     }
 
     const whitelistProof = findWhitelistProofAddress({
       farm,
       creatorOrMint,
-    })
+    });
 
     const farmerVault = await utils.token.associatedAddress({
       mint,
       owner: farmer,
-    })
+    });
 
     const gemOwnerAta = await utils.token.associatedAddress({
       mint,
       owner,
-    })
+    });
 
-    const stakeReceipt = findStakeReceiptAddress({ farmer, mint })
+    const stakeReceipt = findStakeReceiptAddress({ farmer, mint });
 
     const ix = stake(args, {
       farm,
@@ -352,7 +311,6 @@ export const StakingProgram = (connection: Connection) => {
       farmerVault,
       gemOwnerAta,
 
-      lock,
       stakeReceipt,
 
       owner,
@@ -361,30 +319,30 @@ export const StakingProgram = (connection: Connection) => {
       systemProgram,
       tokenProgram,
       associatedTokenProgram,
-    })
+    });
 
-    foundMetadata && ix.keys.push(metadata)
+    foundMetadata && ix.keys.push(metadata);
 
-    return { ix }
-  }
+    return { ix };
+  };
 
   const createClaimRewardsInstruction = async ({
     farm,
     authority,
   }: IClaimRewards) => {
-    const farmer = findFarmerAddress({ farm, owner: authority })
+    const farmer = findFarmerAddress({ farm, owner: authority });
 
-    const farmData = await Farm.fetch(connection, farm)
+    const farmData = await Farm.fetch(connection, farm);
 
     const farmRewardVault = await utils.token.associatedAddress({
       mint: farmData.reward.mint,
       owner: farm,
-    })
+    });
 
     const farmerRewardVault = await utils.token.associatedAddress({
       mint: farmData.reward.mint,
       owner: authority,
-    })
+    });
 
     const ix = claimRewards({
       farm,
@@ -397,34 +355,31 @@ export const StakingProgram = (connection: Connection) => {
       systemProgram,
       tokenProgram,
       associatedTokenProgram,
-    })
+    });
 
-    return { ix }
-  }
+    return { ix };
+  };
 
   const createUnstakeInstruction = async ({ farm, mint, owner }: IUnstake) => {
-    const farmer = findFarmerAddress({ farm, owner })
+    const farmer = findFarmerAddress({ farm, owner });
 
     const farmerVault = await utils.token.associatedAddress({
       mint,
       owner: farmer,
-    })
+    });
 
     const gemOwnerAta = await utils.token.associatedAddress({
       mint,
       owner,
-    })
+    });
 
-    const stakeReceipt = findStakeReceiptAddress({ farmer, mint })
-
-    const lock = (await StakeReceipt.fetch(connection, stakeReceipt)).lock
+    const stakeReceipt = findStakeReceiptAddress({ farmer, mint });
 
     const ix = unstake({
       farm,
       farmer,
       gemMint: mint,
       stakeReceipt,
-      lock,
       farmerVault,
       gemOwnerAta,
       owner,
@@ -432,15 +387,14 @@ export const StakingProgram = (connection: Connection) => {
       systemProgram,
       tokenProgram,
       associatedTokenProgram,
-    })
+    });
 
-    return { ix }
-  }
+    return { ix };
+  };
 
   return {
     // Admin-domain
     createFarmInstruction,
-    createLocksInstruction,
     createAddToWhitelistInstruction,
     createRemoveFromWhitelistInstruction,
     createFundRewardInstruction,
@@ -450,5 +404,5 @@ export const StakingProgram = (connection: Connection) => {
     createStakeInstruction,
     createUnstakeInstruction,
     createClaimRewardsInstruction,
-  }
-}
+  };
+};

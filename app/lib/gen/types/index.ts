@@ -1,7 +1,5 @@
 import * as WhitelistType from "./WhitelistType"
 
-export { LockConfig } from "./LockConfig"
-export type { LockConfigFields, LockConfigJSON } from "./LockConfig"
 export { Reward } from "./Reward"
 export type { RewardFields, RewardJSON } from "./Reward"
 export { WhitelistType }

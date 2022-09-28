@@ -25,14 +25,14 @@ import {
   StakeReceipt,
 } from "../app/lib/gen/accounts";
 import { GemStillStaked } from "../app/lib/gen/errors/custom";
-import { LockConfigFields, WhitelistType } from "../app/lib/gen/types";
+import { WhitelistType } from "../app/lib/gen/types";
 import {
   findFarmAddress,
   findFarmerAddress,
   findStakeReceiptAddress,
   findWhitelistProofAddress,
 } from "../app/lib/pda";
-import { findFarmLocks, withParsedError } from "../app/lib/utils";
+import { withParsedError } from "../app/lib/utils";
 
 const send = (
   connection: Connection,
@@ -100,39 +100,6 @@ describe("staking-program", () => {
     expect(reward.available.toNumber()).to.equal(0);
     expect(reward.mint.toString()).to.eql(rewardMint.toString());
     expect(authority.toString()).to.eql(farmAuthority.publicKey.toString());
-  });
-
-  it("should be able to create new locks for a farm", async () => {
-    const farm = findFarmAddress({
-      authority: farmAuthority.publicKey,
-      rewardMint,
-    });
-
-    const ONE_WEEK = new BN(60 * 60 * 24 * 7);
-
-    const lockConfigs: LockConfigFields[] = [
-      { duration: new BN(0), bonusFactor: 0, cooldown: new BN(0) },
-      { duration: ONE_WEEK, bonusFactor: 25, cooldown: new BN(0) },
-      { duration: ONE_WEEK.muln(2), bonusFactor: 50, cooldown: new BN(0) },
-      { duration: ONE_WEEK.muln(4), bonusFactor: 75, cooldown: new BN(0) },
-    ];
-
-    const { ix } = await stakingClient.createLocksInstruction({
-      farm,
-      authority: farmAuthority.publicKey,
-      lockConfigs,
-    });
-
-    await send(connection, [ix], [farmAuthority]);
-
-    const locks = (await findFarmLocks(connection, farm)).map((acc) =>
-      acc.toJSON()
-    );
-
-    // console.log(locks);
-
-    expect(locks.length).to.be.equal(lockConfigs.length);
-    expect(locks.every((lock) => lock.farm === farm.toBase58())).to.be.true;
   });
 
   it("should be able to fund a farm's rewards", async () => {
@@ -257,13 +224,9 @@ describe("staking-program", () => {
       rewardMint,
     });
 
-    const locks = await findFarmLocks(connection, farm);
-    const lock = locks.find((lock) => lock.bonusFactor === 0);
-
     const { ix } = await stakingClient.createStakeInstruction({
       farm,
       mint: nft,
-      lock: lock.address,
       owner: userWallet.publicKey,
       args: { amount: new BN(1) },
     });
@@ -271,22 +234,11 @@ describe("staking-program", () => {
     await send(connection, [ix], [userWallet]);
 
     const farmer = findFarmerAddress({ farm, owner: userWallet.publicKey });
-
     const farmerAccount = await Farmer.fetch(connection, farmer);
-    const { reward } = await Farm.fetch(connection, farm);
-
-    const expectedRewardRate = Math.floor(100 * (1 + lock.bonusFactor / 100));
-    const expectedReservedReward =
-      expectedRewardRate * lock.duration.toNumber();
+    const expectedRewardRate = 100;
 
     expect(farmerAccount.totalRewardRate.toNumber()).to.equal(
       expectedRewardRate
-    );
-
-    expect(reward.reserved.toNumber()).to.equal(expectedReservedReward);
-
-    expect(reward.available.toNumber()).to.equal(
-      100_000e9 - expectedReservedReward
     );
   });
 
@@ -324,16 +276,12 @@ describe("staking-program", () => {
       rewardMint,
     });
 
-    const locks = await findFarmLocks(connection, farm);
-    const lock = locks.find((lock) => lock.bonusFactor === 0);
-
     const farmer = findFarmerAddress({ farm, owner: userWallet.publicKey });
 
     // Stake 0.5 tokens
     const { ix } = await stakingClient.createStakeInstruction({
       farm,
       mint: rewardMint,
-      lock: lock.address,
       owner: userWallet.publicKey,
       args: { amount: new BN(5e8) },
     });
@@ -341,7 +289,7 @@ describe("staking-program", () => {
     await send(connection, [ix], [userWallet]);
 
     const { totalRewardRate } = await Farmer.fetch(connection, farmer);
-    const expectedRewardRate = 5e8 * Math.floor(1 + lock.bonusFactor / 100);
+    const expectedRewardRate = 5e8;
 
     expect(totalRewardRate.toNumber()).to.eql(expectedRewardRate);
   });
@@ -352,14 +300,10 @@ describe("staking-program", () => {
       rewardMint,
     });
 
-    const locks = await findFarmLocks(connection, farm);
-    const lock = locks.find((lock) => lock.bonusFactor === 0);
-
     try {
       const { ix } = await stakingClient.createStakeInstruction({
         farm,
         mint: rewardMint,
-        lock: lock.address,
         owner: userWallet.publicKey,
         args: { amount: new BN(5e8) },
       });

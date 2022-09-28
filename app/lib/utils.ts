@@ -1,36 +1,14 @@
-import {Metaplex} from "@metaplex-foundation/js";
-import {web3, utils} from "@project-serum/anchor";
+import { Metaplex } from "@metaplex-foundation/js";
+import { web3, utils } from "@project-serum/anchor";
 
-import {Lock, StakeReceipt} from "./gen/accounts";
-import {fromTxError} from "./gen/errors";
-import {PROGRAM_ID} from "./gen/programId";
-import {findFarmerAddress} from "./pda";
+import { StakeReceipt } from "./gen/accounts";
+import { fromTxError } from "./gen/errors";
+import { PROGRAM_ID } from "./gen/programId";
+import { findFarmerAddress } from "./pda";
 
 type ProgramAccounts = {
   pubkey: web3.PublicKey;
   account: web3.AccountInfo<Buffer>;
-};
-
-type LockAccount = Lock & {address: web3.PublicKey};
-
-export const findFarmLocks = async (
-  connection: web3.Connection,
-  farm: web3.PublicKey
-): Promise<LockAccount[]> => {
-  const dataSize = 8 + Lock.layout.span;
-  const filters = [
-    {dataSize},
-    accountFilter(Lock.discriminator),
-    memcmp(8, farm.toBase58()),
-  ];
-
-  const accounts = await fetchAccounts(connection, filters);
-
-  return Promise.all(
-    accounts.map(async ({pubkey, account}) => {
-      return Object.assign(Lock.decode(account.data), {address: pubkey});
-    })
-  );
 };
 
 export const findUserStakeReceipts = async (
@@ -38,7 +16,7 @@ export const findUserStakeReceipts = async (
   farm: web3.PublicKey,
   userPublicKey: web3.PublicKey
 ): Promise<StakeReceipt[]> => {
-  const farmer = findFarmerAddress({farm, owner: userPublicKey});
+  const farmer = findFarmerAddress({ farm, owner: userPublicKey });
 
   const filters = [
     accountFilter(StakeReceipt.discriminator),
@@ -64,14 +42,14 @@ export const tryFindCreator = async (
   mintAddress: web3.PublicKey
 ): Promise<FoundCreator | null> => {
   try {
-    const {creators, metadataAddress} = await Metaplex.make(connection)
+    const { creators, metadataAddress } = await Metaplex.make(connection)
       .nfts()
-      .findByMint({mintAddress})
+      .findByMint({ mintAddress })
       .run();
 
     const creatorAddress = creators.find((c) => c.verified).address;
 
-    return {creatorAddress, metadataAddress};
+    return { creatorAddress, metadataAddress };
   } catch (e) {
     return;
   }

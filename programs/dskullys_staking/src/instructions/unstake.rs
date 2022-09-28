@@ -2,7 +2,6 @@ use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::{Mint, Token, TokenAccount};
 
-use crate::error::StakingError;
 use crate::utils::{self, close_ata, now_ts};
 
 use crate::state::*;
@@ -31,7 +30,6 @@ pub struct Unstake<'info> {
     #[account(
         mut,
         has_one = farmer,
-        has_one = lock,
         seeds = [
             StakeReceipt::PREFIX,
             farmer.key().as_ref(),
@@ -40,9 +38,6 @@ pub struct Unstake<'info> {
         bump,
     )]
     pub stake_receipt: Account<'info, StakeReceipt>,
-
-    #[account(has_one = farm)]
-    pub lock: Account<'info, Lock>,
 
     #[account(
         mut,
@@ -77,26 +72,21 @@ impl<'info> Unstake<'info> {
             self.token_program.to_account_info(),
         );
 
-        anchor_spl::token::transfer(cpi_ctx.with_signer(&[&self.farmer.seeds()]), amount)
+        anchor_spl::token::transfer(
+            cpi_ctx.with_signer(&[&self.farmer.seeds()]),
+            amount,
+        )
     }
 }
 
-pub fn handler<'info>(ctx: Context<'_, '_, '_, 'info, Unstake<'info>>) -> Result<()> {
+pub fn handler<'info>(
+    ctx: Context<'_, '_, '_, 'info, Unstake<'info>>,
+) -> Result<()> {
     let now = now_ts()?;
-    let end_ts = ctx
-        .accounts
-        .stake_receipt
-        .start_ts
-        .checked_add(ctx.accounts.lock.duration)
-        .ok_or(StakingError::ArithmeticError)?;
-
     let farm = &mut ctx.accounts.farm;
     let receipt = &ctx.accounts.stake_receipt;
 
-    require_gte!(now, end_ts, StakingError::GemStillLocked);
-
     ctx.accounts.farmer.update_accrued_rewards(farm)?;
-    ctx.accounts.release_gems(receipt.amount)?;
     ctx.accounts
         .farmer
         .decrease_reward_rate(receipt.reward_rate)?;

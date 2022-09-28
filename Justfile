@@ -5,7 +5,7 @@ default:
 	@just --list
 
 build:
-	anchor build
+	anchor build 
 	anchor run gen
 
 test:

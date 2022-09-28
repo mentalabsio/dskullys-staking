@@ -56,9 +56,6 @@ pub struct Stake<'info> {
     )]
     pub stake_receipt: Account<'info, StakeReceipt>,
 
-    #[account(has_one = farm)]
-    pub lock: Account<'info, Lock>,
-
     #[account(mut)]
     pub owner: Signer<'info>,
 
@@ -84,7 +81,10 @@ impl Stake<'_> {
     }
 }
 
-pub fn handler<'info>(ctx: Context<'_, '_, '_, 'info, Stake<'info>>, amount: u64) -> Result<()> {
+pub fn handler<'info>(
+    ctx: Context<'_, '_, '_, 'info, Stake<'info>>,
+    amount: u64,
+) -> Result<()> {
     let whitelist_proof = &ctx.accounts.whitelist_proof;
 
     WhitelistProof::validate(
@@ -98,43 +98,24 @@ pub fn handler<'info>(ctx: Context<'_, '_, '_, 'info, Stake<'info>>, amount: u64
     ctx.accounts.lock_gem(amount)?;
 
     let now_ts = now_ts()?;
-    let farm = &mut ctx.accounts.farm;
-
-    let factor = ctx.accounts.lock.bonus_factor;
-    let base_rate = amount * ctx.accounts.whitelist_proof.reward_rate;
-    let reward_rate = calculate_reward_rate(base_rate, factor as u64)?;
-
+    let reward_rate = amount * ctx.accounts.whitelist_proof.reward_rate;
     let stake_receipt = &mut ctx.accounts.stake_receipt;
 
     if stake_receipt.farmer != Pubkey::default() {
         // Receipt account is already initialized.
         // We're either trying to stake an NFT again, or just trying to stake more fungible tokens.
-
         require_keys_eq!(stake_receipt.farmer, ctx.accounts.farmer.key());
         require_keys_eq!(stake_receipt.mint, ctx.accounts.gem_mint.key());
         require!(!stake_receipt.is_running(), StakingError::GemStillStaked);
-
-        if let Some(end_ts) = stake_receipt.end_ts {
-            require_gte!(
-                now_ts,
-                end_ts + ctx.accounts.lock.cooldown,
-                StakingError::CooldownIsNotOver
-            );
-        }
     }
 
     **stake_receipt = StakeReceipt::new(
         ctx.accounts.farmer.key(),
         ctx.accounts.gem_mint.key(),
-        ctx.accounts.lock.key(),
         now_ts,
         amount,
         reward_rate,
     );
-
-    let reserved_amount = reward_rate as u64 * ctx.accounts.lock.duration;
-
-    farm.reward.try_reserve(reserved_amount)?;
 
     ctx.accounts
         .farmer

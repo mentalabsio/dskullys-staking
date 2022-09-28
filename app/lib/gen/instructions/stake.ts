@@ -16,7 +16,6 @@ export interface StakeAccounts {
   farmerVault: PublicKey
   gemOwnerAta: PublicKey
   stakeReceipt: PublicKey
-  lock: PublicKey
   owner: PublicKey
   rent: PublicKey
   systemProgram: PublicKey
@@ -35,7 +34,6 @@ export function stake(args: StakeArgs, accounts: StakeAccounts) {
     { pubkey: accounts.farmerVault, isSigner: false, isWritable: true },
     { pubkey: accounts.gemOwnerAta, isSigner: false, isWritable: true },
     { pubkey: accounts.stakeReceipt, isSigner: false, isWritable: true },
-    { pubkey: accounts.lock, isSigner: false, isWritable: false },
     { pubkey: accounts.owner, isSigner: true, isWritable: true },
     { pubkey: accounts.rent, isSigner: false, isWritable: false },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
