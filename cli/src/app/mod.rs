@@ -5,7 +5,7 @@ use anchor_client::{
 };
 use anyhow::{anyhow, bail, Result};
 use clap::{arg_enum, Parser, Subcommand};
-use magicshards_staking::instructions::LockConfig;
+use dskullys_staking::instructions::LockConfig;
 use serde::Deserialize;
 use std::{path::PathBuf, rc::Rc};
 
@@ -193,11 +193,11 @@ pub struct Lock {
     pub bonus_factor: u8,
 }
 
-impl From<WhitelistType> for magicshards_staking::state::WhitelistType {
+impl From<WhitelistType> for dskullys_staking::state::WhitelistType {
     fn from(ty: WhitelistType) -> Self {
         match ty {
-            WhitelistType::Creator => magicshards_staking::state::WhitelistType::Creator,
-            WhitelistType::SplToken => magicshards_staking::state::WhitelistType::Mint,
+            WhitelistType::Creator => dskullys_staking::state::WhitelistType::Creator,
+            WhitelistType::SplToken => dskullys_staking::state::WhitelistType::Mint,
         }
     }
 }

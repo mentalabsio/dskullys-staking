@@ -618,7 +618,7 @@ dependencies = [
  "anchor-spl",
  "anyhow",
  "clap 3.2.15",
- "magicshards-staking",
+ "dskullys-staking",
  "serde",
  "serde_json",
  "shellexpand",
@@ -891,6 +891,15 @@ dependencies = [
  "libc",
  "quote 0.6.13",
  "syn 0.15.44",
+]
+
+[[package]]
+name = "dskullys-staking"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
+ "solutils",
 ]
 
 [[package]]
@@ -1593,15 +1602,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "abb12e687cfb44aa40f41fc3978ef76448f9b6038cad6aef4259d3c095a2382e"
 dependencies = [
  "cfg-if",
-]
-
-[[package]]
-name = "magicshards-staking"
-version = "0.1.0"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "solutils",
 ]
 
 [[package]]

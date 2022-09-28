@@ -7,7 +7,7 @@ use anchor_client::{
     Cluster, Program,
 };
 use anyhow::{Context, Result};
-use magicshards_staking::{
+use dskullys_staking::{
     accounts,
     instructions::LockConfig,
     state::{Farm, FarmManager, Lock, WhitelistProof, WhitelistType},
@@ -34,7 +34,7 @@ impl StakingClient {
         );
 
         Ok(Self {
-            program: client.program(magicshards_staking::ID),
+            program: client.program(dskullys_staking::ID),
             payer,
         })
     }
@@ -83,7 +83,7 @@ impl StakingClient {
         self.program
             .request()
             .accounts(accs)
-            .args(magicshards_staking::instruction::CreateFarm)
+            .args(dskullys_staking::instruction::CreateFarm)
             .send()?;
 
         let farm_manager = find_farm_manager_address(farm, self.payer.pubkey());
@@ -98,7 +98,7 @@ impl StakingClient {
         self.program
             .request()
             .accounts(accs)
-            .args(magicshards_staking::instruction::AddManager)
+            .args(dskullys_staking::instruction::AddManager)
             .send()?;
 
         Ok(farm)
@@ -120,7 +120,7 @@ impl StakingClient {
             .program
             .request()
             .accounts(accs)
-            .args(magicshards_staking::instruction::AddManager)
+            .args(dskullys_staking::instruction::AddManager)
             .signer(&*self.payer)
             .send()?;
 
@@ -155,7 +155,7 @@ impl StakingClient {
             .program
             .request()
             .accounts(accs)
-            .args(magicshards_staking::instruction::AddToWhitelist {
+            .args(dskullys_staking::instruction::AddToWhitelist {
                 whitelist_type,
                 reward_rate,
             })
@@ -188,7 +188,7 @@ impl StakingClient {
             .program
             .request()
             .accounts(accs)
-            .args(magicshards_staking::instruction::RemoveFromWhitelist)
+            .args(dskullys_staking::instruction::RemoveFromWhitelist)
             .signer(&*self.payer)
             .send()?;
 
@@ -231,7 +231,7 @@ impl StakingClient {
             .program
             .request()
             .accounts(accs)
-            .args(magicshards_staking::instruction::FundReward { amount })
+            .args(dskullys_staking::instruction::FundReward { amount })
             .signer(&*self.payer)
             .send()?;
 
@@ -264,7 +264,7 @@ impl StakingClient {
             .request()
             .accounts(accs)
             .accounts(locks_meta)
-            .args(magicshards_staking::instruction::CreateLocks {
+            .args(dskullys_staking::instruction::CreateLocks {
                 lock_configs: locks.into(),
             })
             .signer(&*self.payer)

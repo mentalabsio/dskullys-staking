@@ -2,7 +2,7 @@ use std::{fmt::Display, io::Write};
 
 use anchor_client::solana_sdk::pubkey::Pubkey;
 use anyhow::Result;
-use magicshards_staking::state::{Farm, FarmManager, Lock, WhitelistProof, WhitelistType};
+use dskullys_staking::state::{Farm, FarmManager, Lock, WhitelistProof, WhitelistType};
 
 pub(crate) struct OutputOptions {
     writer: Box<dyn Write>,

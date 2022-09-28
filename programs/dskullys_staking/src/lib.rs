@@ -11,7 +11,7 @@ use instructions::*;
 use state::*;
 
 #[program]
-pub mod magicshards_staking {
+pub mod dskullys_staking {
     use super::*;
 
     pub fn create_farm(ctx: Context<CreateFarm>) -> Result<()> {
