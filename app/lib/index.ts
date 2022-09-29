@@ -27,7 +27,7 @@ import {
   findFarmManagerAddress,
   findStakeReceiptAddress,
 } from "./pda";
-import { tryFindCreator } from "./utils";
+import { hasBuffAttribute, tryFindCreator } from "./utils";
 
 interface ICreateFarm {
   authority: PublicKey;
@@ -71,7 +71,7 @@ interface IInitializeFarmer {
 interface IStake {
   farm: PublicKey;
   mint: PublicKey;
-  args: StakeArgs;
+  amount: BN;
   owner: PublicKey;
 }
 
@@ -265,7 +265,7 @@ export const StakingProgram = (connection: Connection) => {
     owner,
     farm,
     mint,
-    args,
+    amount,
   }: IStake) => {
     const farmer = findFarmerAddress({ farm, owner });
 
@@ -302,24 +302,29 @@ export const StakingProgram = (connection: Connection) => {
 
     const stakeReceipt = findStakeReceiptAddress({ farmer, mint });
 
-    const ix = stake(args, {
-      farm,
-      farmer,
+    const hasEssence = await hasBuffAttribute(connection, mint);
 
-      gemMint: mint,
-      whitelistProof,
-      farmerVault,
-      gemOwnerAta,
+    const ix = stake(
+      { amount, hasEssence },
+      {
+        farm,
+        farmer,
 
-      stakeReceipt,
+        gemMint: mint,
+        whitelistProof,
+        farmerVault,
+        gemOwnerAta,
 
-      owner,
+        stakeReceipt,
 
-      rent,
-      systemProgram,
-      tokenProgram,
-      associatedTokenProgram,
-    });
+        owner,
+
+        rent,
+        systemProgram,
+        tokenProgram,
+        associatedTokenProgram,
+      }
+    );
 
     foundMetadata && ix.keys.push(metadata);
 

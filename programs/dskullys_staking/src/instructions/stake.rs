@@ -84,6 +84,7 @@ impl Stake<'_> {
 pub fn handler<'info>(
     ctx: Context<'_, '_, '_, 'info, Stake<'info>>,
     amount: u64,
+    has_essence: bool,
 ) -> Result<()> {
     let whitelist_proof = &ctx.accounts.whitelist_proof;
 
@@ -99,6 +100,7 @@ pub fn handler<'info>(
 
     let now_ts = now_ts()?;
     let reward_rate = amount * ctx.accounts.whitelist_proof.reward_rate;
+    let reward_rate = reward_rate * (has_essence as u64 + 1);
     let stake_receipt = &mut ctx.accounts.stake_receipt;
 
     if stake_receipt.farmer != Pubkey::default() {

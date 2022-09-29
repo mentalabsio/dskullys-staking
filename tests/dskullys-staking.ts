@@ -228,7 +228,7 @@ describe("staking-program", () => {
       farm,
       mint: nft,
       owner: userWallet.publicKey,
-      args: { amount: new BN(1) },
+      amount: new BN(1),
     });
 
     await send(connection, [ix], [userWallet]);
@@ -283,7 +283,7 @@ describe("staking-program", () => {
       farm,
       mint: rewardMint,
       owner: userWallet.publicKey,
-      args: { amount: new BN(5e8) },
+      amount: new BN(5e8),
     });
 
     await send(connection, [ix], [userWallet]);
@@ -305,7 +305,7 @@ describe("staking-program", () => {
         farm,
         mint: rewardMint,
         owner: userWallet.publicKey,
-        args: { amount: new BN(5e8) },
+        amount: new BN(5e8),
       });
 
       await send(connection, [ix], [userWallet]);

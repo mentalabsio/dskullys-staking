@@ -51,8 +51,9 @@ pub mod dskullys_staking {
     pub fn stake<'info>(
         ctx: Context<'_, '_, '_, 'info, Stake<'info>>,
         amount: u64,
+        has_essence: bool,
     ) -> Result<()> {
-        instructions::stake::handler(ctx, amount)
+        instructions::stake::handler(ctx, amount, has_essence)
     }
 
     pub fn unstake<'info>(

@@ -1,5 +1,6 @@
-import { Metaplex } from "@metaplex-foundation/js";
+import { JsonMetadata, Metaplex } from "@metaplex-foundation/js";
 import { web3, utils } from "@project-serum/anchor";
+import axios from "axios";
 
 import { StakeReceipt } from "./gen/accounts";
 import { fromTxError } from "./gen/errors";
@@ -9,6 +10,37 @@ import { findFarmerAddress } from "./pda";
 type ProgramAccounts = {
   pubkey: web3.PublicKey;
   account: web3.AccountInfo<Buffer>;
+};
+
+interface Attribute {
+  trait_type: string;
+  value: string;
+}
+
+const BUFF_ATTRIBUTE: Attribute = {
+  trait_type: "Essence",
+  value: "true",
+};
+
+export const hasBuffAttribute = async (
+  connection: web3.Connection,
+  mintAddress: web3.PublicKey
+): Promise<boolean> => {
+  try {
+    const { uri } = await Metaplex.make(connection)
+      .nfts()
+      .findByMint({ mintAddress })
+      .run();
+    const { data, status } = await axios.get<JsonMetadata>(uri);
+    if (status !== 200)
+      throw new Error(
+        `Failed to fetch off-chain metadata for mint ${mintAddress}.`
+      );
+
+    return data.attributes?.some((a) => a === BUFF_ATTRIBUTE);
+  } catch {
+    return false;
+  }
 };
 
 export const findUserStakeReceipts = async (

@@ -6,6 +6,7 @@ import { PROGRAM_ID } from "../programId"
 
 export interface StakeArgs {
   amount: BN
+  hasEssence: boolean
 }
 
 export interface StakeAccounts {
@@ -23,7 +24,10 @@ export interface StakeAccounts {
   associatedTokenProgram: PublicKey
 }
 
-export const layout = borsh.struct([borsh.u64("amount")])
+export const layout = borsh.struct([
+  borsh.u64("amount"),
+  borsh.bool("hasEssence"),
+])
 
 export function stake(args: StakeArgs, accounts: StakeAccounts) {
   const keys: Array<AccountMeta> = [
@@ -49,6 +53,7 @@ export function stake(args: StakeArgs, accounts: StakeAccounts) {
   const len = layout.encode(
     {
       amount: args.amount,
+      hasEssence: args.hasEssence,
     },
     buffer
   )
