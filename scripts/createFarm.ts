@@ -1,42 +1,8 @@
 import { StakingProgram } from "../app/lib";
 import * as anchor from "@project-serum/anchor";
-import { createMint } from "@solana/spl-token";
-import { getOrCreateAssociatedTokenAccount } from "@solana/spl-token";
-import { mintTo } from "@solana/spl-token";
 import { Connection, PublicKey, sendAndConfirmTransaction, Signer, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { findFarmAddress } from "../app/lib/pda";
 import { withParsedError } from "../app/lib/utils";
-
-const createFungibleToken = async (
-  connection: anchor.web3.Connection,
-  payer: anchor.web3.Signer
-): Promise<{ mint: anchor.web3.PublicKey }> => {
-  await connection.confirmTransaction(
-    await connection.requestAirdrop(payer.publicKey, 0.5e9),
-    'confirmed'
-  );
-
-  const mintAuthority = payer.publicKey;
-  const mint = await createMint(connection, payer, mintAuthority, null, 9);
-
-  const associatedAccount = await getOrCreateAssociatedTokenAccount(
-    connection,
-    payer,
-    mint,
-    mintAuthority
-  );
-
-  await mintTo(
-    connection,
-    payer,
-    mint,
-    associatedAccount.address,
-    mintAuthority,
-    1_000_000e9
-  );
-
-  return { mint };
-};
 
 const send = (
   connection: Connection,
