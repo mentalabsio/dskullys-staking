@@ -1,16 +1,14 @@
 use anchor_client::{
     anchor_lang::{solana_program, system_program},
     solana_sdk::{
-        commitment_config::CommitmentConfig, instruction::AccountMeta, pubkey::Pubkey,
-        signer::Signer,
+        commitment_config::CommitmentConfig, pubkey::Pubkey, signer::Signer,
     },
     Cluster, Program,
 };
 use anyhow::{Context, Result};
 use dskullys_staking::{
     accounts,
-    instructions::LockConfig,
-    state::{Farm, FarmManager, Lock, WhitelistProof, WhitelistType},
+    state::{Farm, FarmManager, WhitelistProof, WhitelistType},
 };
 use std::rc::Rc;
 
@@ -39,23 +37,35 @@ impl StakingClient {
         })
     }
 
-    pub fn get_manager_farms(&self, manager_wallet: Option<Pubkey>) -> Result<Vec<(Pubkey, Farm)>> {
-        let farms = find_accounts_lazy(&self.program, &[])?.filter_map(Result::ok);
+    pub fn get_manager_farms(
+        &self,
+        manager_wallet: Option<Pubkey>,
+    ) -> Result<Vec<(Pubkey, Farm)>> {
+        let farms =
+            find_accounts_lazy(&self.program, &[])?.filter_map(Result::ok);
         let manager = manager_wallet.unwrap_or_else(|| self.payer.pubkey());
-        let mut manager_accounts =
-            find_accounts_lazy::<FarmManager>(&self.program, &[memcmp(40, manager.as_ref())])?
-                .filter_map(Result::ok);
+        let mut manager_accounts = find_accounts_lazy::<FarmManager>(
+            &self.program,
+            &[memcmp(40, manager.as_ref())],
+        )?
+        .filter_map(Result::ok);
 
         Ok(farms
             .filter(|(k, _)| manager_accounts.any(|(_, data)| data.farm == *k))
             .collect())
     }
 
-    pub fn get_farm_whitelists(&self, farm: Pubkey) -> Result<Vec<(Pubkey, WhitelistProof)>> {
+    pub fn get_farm_whitelists(
+        &self,
+        farm: Pubkey,
+    ) -> Result<Vec<(Pubkey, WhitelistProof)>> {
         find_accounts(&self.program, &[memcmp(40, farm.as_ref())])
     }
 
-    pub fn get_farm_managers(&self, farm: Pubkey) -> Result<Vec<(Pubkey, FarmManager)>> {
+    pub fn get_farm_managers(
+        &self,
+        farm: Pubkey,
+    ) -> Result<Vec<(Pubkey, FarmManager)>> {
         find_accounts::<FarmManager>(&self.program, &[memcmp(8, farm.as_ref())])
     }
 
@@ -67,7 +77,10 @@ impl StakingClient {
     pub fn create_farm(&self, reward_mint: Pubkey) -> Result<Pubkey> {
         let farm = pda::find_farm_address(self.payer.pubkey(), reward_mint);
         let farm_vault =
-            anchor_spl::associated_token::get_associated_token_address(&farm, &reward_mint);
+            anchor_spl::associated_token::get_associated_token_address(
+                &farm,
+                &reward_mint,
+            );
 
         let accs = accounts::CreateFarm {
             farm,
@@ -104,8 +117,13 @@ impl StakingClient {
         Ok(farm)
     }
 
-    pub fn add_manager(&self, farm: Pubkey, manager_owner: Option<Pubkey>) -> Result<()> {
-        let manager_owner = manager_owner.unwrap_or_else(|| self.payer.pubkey());
+    pub fn add_manager(
+        &self,
+        farm: Pubkey,
+        manager_owner: Option<Pubkey>,
+    ) -> Result<()> {
+        let manager_owner =
+            manager_owner.unwrap_or_else(|| self.payer.pubkey());
         let farm_manager = find_farm_manager_address(farm, manager_owner);
 
         let accs = accounts::AddManager {
@@ -139,8 +157,10 @@ impl StakingClient {
         whitelist_type: WhitelistType,
         reward_rate: u64,
     ) -> Result<()> {
-        let farm_manager = pda::find_farm_manager_address(farm, self.payer.pubkey());
-        let whitelist_proof = pda::find_whitelist_proof_address(farm, address_to_whitelist);
+        let farm_manager =
+            pda::find_farm_manager_address(farm, self.payer.pubkey());
+        let whitelist_proof =
+            pda::find_whitelist_proof_address(farm, address_to_whitelist);
 
         let accs = accounts::AddToWhitelist {
             farm,
@@ -162,7 +182,8 @@ impl StakingClient {
             .signer(&*self.payer)
             .send()?;
 
-        let whitelist_account: WhitelistProof = self.program.account(whitelist_proof)?;
+        let whitelist_account: WhitelistProof =
+            self.program.account(whitelist_proof)?;
 
         println!(
             "Added {} to whitelist. Signature: {}",
@@ -172,8 +193,13 @@ impl StakingClient {
         Ok(())
     }
 
-    pub fn remove_from_whitelist(&self, farm: Pubkey, address: Pubkey) -> Result<()> {
-        let farm_manager = pda::find_farm_manager_address(farm, self.payer.pubkey());
+    pub fn remove_from_whitelist(
+        &self,
+        farm: Pubkey,
+        address: Pubkey,
+    ) -> Result<()> {
+        let farm_manager =
+            pda::find_farm_manager_address(farm, self.payer.pubkey());
         let whitelist_proof = pda::find_whitelist_proof_address(farm, address);
 
         let accs = accounts::RemoveFromWhitelist {
@@ -201,21 +227,24 @@ impl StakingClient {
     }
 
     pub fn deposit_reward(&self, farm: Pubkey, amount: u64) -> Result<()> {
-        let farm_manager = pda::find_farm_manager_address(farm, self.payer.pubkey());
+        let farm_manager =
+            pda::find_farm_manager_address(farm, self.payer.pubkey());
         let farm_account: Farm = self
             .program
             .account(farm)
             .with_context(|| format!("Farm {} not found", farm))?;
 
-        let farm_vault = anchor_spl::associated_token::get_associated_token_address(
-            &farm,
-            &farm_account.reward.mint,
-        );
+        let farm_vault =
+            anchor_spl::associated_token::get_associated_token_address(
+                &farm,
+                &farm_account.reward.mint,
+            );
 
-        let manager_ata = anchor_spl::associated_token::get_associated_token_address(
-            &self.payer.pubkey(),
-            &farm_account.reward.mint,
-        );
+        let manager_ata =
+            anchor_spl::associated_token::get_associated_token_address(
+                &self.payer.pubkey(),
+                &farm_account.reward.mint,
+            );
 
         let accs = accounts::FundReward {
             farm,
@@ -241,42 +270,5 @@ impl StakingClient {
         );
 
         Ok(())
-    }
-
-    pub fn create_locks(&self, farm: Pubkey, locks: &[LockConfig]) -> Result<()> {
-        let farm_manager = pda::find_farm_manager_address(farm, self.payer.pubkey());
-
-        let accs = accounts::CreateLocks {
-            farm,
-            farm_manager,
-            authority: self.payer.pubkey(),
-            system_program: system_program::ID,
-        };
-
-        let locks_meta = locks
-            .iter()
-            .map(|&config| AccountMeta::new(pda::find_lock_address(farm, config), false))
-            .collect::<Vec<_>>();
-
-        let count = locks.len();
-
-        self.program
-            .request()
-            .accounts(accs)
-            .accounts(locks_meta)
-            .args(dskullys_staking::instruction::CreateLocks {
-                lock_configs: locks.into(),
-            })
-            .signer(&*self.payer)
-            .send()?;
-
-        // TODO: move to output.
-        println!("{count} locks created.");
-
-        Ok(())
-    }
-
-    pub fn list_locks(&self, farm: Pubkey) -> Result<Vec<(Pubkey, Lock)>> {
-        find_accounts(&self.program, &[memcmp(8, farm.as_ref())])
     }
 }
