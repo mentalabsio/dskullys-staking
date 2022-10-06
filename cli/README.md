@@ -16,7 +16,4 @@ staking farm fund <FARM_ADDRESS> 1000
 
 # Whitelist a new creator address
 staking farm wl add <FARM_ADDRESS> <ADDRESS_TO_WHITELIST>
-
-# TODO: Add locks to a farm.
-# staking farm lock add locks.json
 ```

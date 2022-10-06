@@ -5,8 +5,6 @@ use anchor_client::{
 };
 use anyhow::{anyhow, bail, Result};
 use clap::{arg_enum, Parser, Subcommand};
-use dskullys_staking::instructions::LockConfig;
-use serde::Deserialize;
 use std::{path::PathBuf, rc::Rc};
 
 mod output;
@@ -79,32 +77,6 @@ enum FarmCommand {
         #[clap(subcommand)]
         action: RewardAction,
     },
-
-    /// Create locks for a farm from a file.
-    /// The file should be a JSON array of objects with the following fields:
-    /// - `cooldown`: how many seconds until the NFT can be staked again.
-    /// - `duration`: how many seconds the NFT will stay locked for staking.
-    /// - `bonus_factor`: bonus percentage points. Will increase the reward rate by this factor. (0-255)
-    Lock {
-        #[clap(subcommand)]
-        action: LockAction,
-    },
-}
-
-#[derive(Debug, Subcommand)]
-enum LockAction {
-    /// Add new locks to a farm from a file.
-    #[clap(alias = "create", alias = "new")]
-    Add {
-        farm_address: Pubkey,
-        #[clap(required = true)]
-        /// Path to the file containing the locks.
-        file: PathBuf,
-    },
-
-    /// List all locks from a farm.
-    #[clap(alias = "ls")]
-    List { farm_address: Pubkey },
 }
 
 #[derive(Debug, Subcommand)]
@@ -185,19 +157,15 @@ arg_enum! {
     }
 }
 
-#[derive(Debug, Copy, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Lock {
-    pub duration: u64,
-    pub cooldown: u64,
-    pub bonus_factor: u8,
-}
-
 impl From<WhitelistType> for dskullys_staking::state::WhitelistType {
     fn from(ty: WhitelistType) -> Self {
         match ty {
-            WhitelistType::Creator => dskullys_staking::state::WhitelistType::Creator,
-            WhitelistType::SplToken => dskullys_staking::state::WhitelistType::Mint,
+            WhitelistType::Creator => {
+                dskullys_staking::state::WhitelistType::Creator
+            }
+            WhitelistType::SplToken => {
+                dskullys_staking::state::WhitelistType::Mint
+            }
         }
     }
 }
@@ -213,12 +181,14 @@ pub fn run() -> Result<()> {
                     .as_ref()
                     .ok_or_else(|| anyhow!("Config file not found."))?;
                 let config =
-                    solana_cli_config::Config::load(solana_config_file).unwrap_or_default();
+                    solana_cli_config::Config::load(solana_config_file)
+                        .unwrap_or_default();
                 config.keypair_path
             }
         };
 
-        read_keypair_file(&kp_path).map_err(|e| anyhow!("Failed to read keypair. {}.", e))?
+        read_keypair_file(&kp_path)
+            .map_err(|e| anyhow!("Failed to read keypair. {}.", e))?
     };
 
     let client = StakingClient::new(args.url, Rc::new(payer))?;
@@ -226,7 +196,11 @@ pub fn run() -> Result<()> {
     process_command(client, args.command, OutputOptions::default())
 }
 
-fn process_command(client: StakingClient, command: Command, options: OutputOptions) -> Result<()> {
+fn process_command(
+    client: StakingClient,
+    command: Command,
+    options: OutputOptions,
+) -> Result<()> {
     match command {
         Command::Farm(cmd) => match cmd {
             FarmCommand::Create { reward_mint } => {
@@ -246,7 +220,12 @@ fn process_command(client: StakingClient, command: Command, options: OutputOptio
                     address,
                     ty,
                     reward_rate,
-                } => client.add_to_whitelist(farm_address, address, ty.into(), reward_rate),
+                } => client.add_to_whitelist(
+                    farm_address,
+                    address,
+                    ty.into(),
+                    reward_rate,
+                ),
 
                 WhitelistAction::Remove {
                     farm_address,
@@ -254,7 +233,9 @@ fn process_command(client: StakingClient, command: Command, options: OutputOptio
                 } => client.remove_from_whitelist(farm_address, address),
 
                 WhitelistAction::List { farm_address } => output_command(
-                    WhitelistListOutput(client.get_farm_whitelists(farm_address)?),
+                    WhitelistListOutput(
+                        client.get_farm_whitelists(farm_address)?,
+                    ),
                     options,
                 ),
             },
@@ -266,7 +247,9 @@ fn process_command(client: StakingClient, command: Command, options: OutputOptio
                 } => client.deposit_reward(farm_address, amount),
 
                 // TODO
-                RewardAction::Withdraw { .. } => bail!("Withdrawal not supported yet."),
+                RewardAction::Withdraw { .. } => {
+                    bail!("Withdrawal not supported yet.")
+                }
             },
 
             FarmCommand::Manager { action } => match action {
@@ -276,30 +259,11 @@ fn process_command(client: StakingClient, command: Command, options: OutputOptio
                 } => client.add_manager(farm_address, manager_owner),
 
                 ManagerAction::List { farm_address } => output_command(
-                    FarmManagerListOutput(client.get_farm_managers(farm_address)?),
+                    FarmManagerListOutput(
+                        client.get_farm_managers(farm_address)?,
+                    ),
                     options,
                 ),
-            },
-
-            FarmCommand::Lock { action } => match action {
-                LockAction::Add { farm_address, file } => {
-                    let content = std::fs::read_to_string(file)?;
-                    let locks: Vec<Lock> = serde_json::from_str(&content)?;
-
-                    let lock_configs: Vec<_> = locks
-                        .into_iter()
-                        .map(|l| LockConfig {
-                            duration: l.duration,
-                            cooldown: l.cooldown,
-                            bonus_factor: l.bonus_factor,
-                        })
-                        .collect();
-
-                    client.create_locks(farm_address, &lock_configs)
-                }
-                LockAction::List { farm_address } => {
-                    output_command(LockListOutput(client.list_locks(farm_address)?), options)
-                }
             },
         },
     }
