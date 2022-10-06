@@ -92,10 +92,10 @@ export default function Home() {
           margin: "0",
           position: "relative",
           padding: "0 1.6rem",
-          minHeight: "60vh",
           width: "100%",
-          backgroundImage: "url(/dskullys_background.jpeg)",
+          backgroundImage: "url(/dskullys_background.jpg)",
           backgroundSize: "cover",
+          minHeight: '100vh'
         }}
       >
         <Flex sx={{
