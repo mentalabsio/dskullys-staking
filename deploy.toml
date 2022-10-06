@@ -1,0 +1,12 @@
+url = "https://devnet.genesysgo.net/"
+
+[program]
+authority = "~/.config/solana/anchor.json"
+keypair = "{userDirectory}/dskullys-staking/target/deploy/dskullys_staking-keypair.json"
+shared_obj = "{userDirectory}/dskullys-staking/target/deploy/dskullys_staking.so"
+
+[options]
+jobs = 8
+max_retries = 9000
+sleep = 100
+timeout = 30
