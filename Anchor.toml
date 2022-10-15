@@ -1,8 +1,8 @@
 [features]
 seeds = false
 
-[programs.localnet]
-dskullys_staking = "AN21jidmj4MKC5Qm4GJqEDr5NswDBeZaPWuyaSwX2tcj"
+[programs.mainnet]
+dskullys_staking = "DkMt4VqQvgeivRjqpL3bQrwfRgKX4n1xRGCbF2acfSpC"
 
 [registry]
 url = "https://anchor.projectserum.com"
