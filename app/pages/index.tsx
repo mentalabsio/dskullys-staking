@@ -198,7 +198,7 @@ export default function Home() {
                   </Text>
                 ) : null} */}
               </Flex>
-              <Button onClick={claim}>Claim rewards</Button>
+              <Button onClick={claim} disabled={farmerAccount?.accruedRewards?.toNumber() ? false : true}>Claim rewards</Button>
 
               <Flex
                 sx={{
