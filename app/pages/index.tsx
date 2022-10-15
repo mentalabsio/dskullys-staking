@@ -14,7 +14,7 @@ import WalletManager from "@/components/WalletManager/WalletManager"
 import Image from "next/image"
 export default function Home() {
   const { walletNFTs, fetchNFTs } = useWalletNFTs([
-    "J1E9xvBsE8gwfV8qXVxbQ6H2wfEEKjRaxS2ENiZm4h2D",
+    "Eq1ZERQ7yqU7LFuD9mHeHKvZFT899r7wSYpqrZ52HWE6",
   ])
   const [selectedWalletItems, setSelectedWalletItems] = useState<NFT[]>([])
   const [selectedVaultItems, setSelectedVaultItems] = useState<NFT[]>([])
