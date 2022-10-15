@@ -8,3 +8,7 @@
   src: url("/fonts/AvertaStdBold/font.woff2") format("woff2"),
     url("/fonts/AvertaStdBold/font.woff") format("woff");
 }
+@font-face {
+  font-family: "Quarry Bones";
+  src: url("/fonts/Quarry-Bones.otf") format("otf"),
+}
