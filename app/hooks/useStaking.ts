@@ -11,11 +11,11 @@ import { getNFTMetadata } from "utils/nfts"
 import { NFT } from "./useWalletNFTs"
 
 const farmAuthorityPubKey = new web3.PublicKey(
-  "7tksmvdUxpueAeXHySFBwjysfKdGvFfFpqfNKGS2yEAx"
+  "9NcCHbUH5Me7nDb8G8ULEaEtQZdRY3oS23CFgdkK1sjT"
 )
 
 const rewardMint = new web3.PublicKey(
-  "5szfhmCRzvGZWjANJjbnhgEQSzoyFheQQBDPCJ2ZfbC2"
+  "FUGwDrBaPetAdeGq1VZDcT9sxAWCMmeqFwyr4qu4jg4m"
 )
 
 export type StakeReceiptWithMetadata = StakeReceipt & {
@@ -26,7 +26,7 @@ const useStaking = () => {
   const { connection } = useConnection()
   const { publicKey, sendTransaction } = useWallet()
   const [feedbackStatus, setFeedbackStatus] = useState("")
-  const [farmerAccount, setFarmerAccount] = useState<Farmer | false | null>(
+  const [farmerAccount, setFarmerAccount] = useState<Farmer | null>(
     null
   )
 
@@ -92,15 +92,15 @@ const useStaking = () => {
 
       setFeedbackStatus("Fetching farmer...")
       const farmer = findFarmerAddress({ farm, owner: publicKey })
-      const farmerAccount = await Farmer.fetch(connection, farmer)
+      const farmerAccountData = await Farmer.fetch(connection, farmer)
 
-      if (!farmerAccount) {
-        setFarmerAccount(false)
+      if (!farmerAccountData) {
+        setFarmerAccount(null)
 
         return true
       }
 
-      setFarmerAccount(farmerAccount)
+      setFarmerAccount(farmerAccountData)
       setFeedbackStatus("")
     } catch (e) {
       setFeedbackStatus("Something went wrong. " + (e.message ? e.message : e))
