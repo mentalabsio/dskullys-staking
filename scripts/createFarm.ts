@@ -4,7 +4,7 @@ import { Connection, PublicKey, sendAndConfirmTransaction, Signer, Transaction, 
 import { findFarmAddress } from "../app/lib/pda";
 import { withParsedError } from "../app/lib/utils";
 
-const send = (
+export const send = (
   connection: Connection,
   ixs: TransactionInstruction[],
   signers: Signer[]
