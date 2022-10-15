@@ -6,6 +6,11 @@ export const reactTabsStyles = {
     margin: "0 0 10px",
     padding: "0",
     marginBottom: "1.6rem",
+    minWidth: '300px',
+
+    "@media screen and (min-width: 768px)": {
+      minWidth: '700px'
+    }
   },
   ".react-tabs__tab": {
     display: "inline-block",
