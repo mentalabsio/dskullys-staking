@@ -5,3 +5,7 @@ Project Specs:
 - [ ] User can unstake a Dskully
 - [ ] User can claim rewards
 
+# Mainnet deploy
+## farmId: `3ZY1Ee7gCJM5zDTQz2QzmF5wYgUBW8aYNVci1CM4F987`
+
+

@@ -11,11 +11,11 @@ import { getNFTMetadata } from "utils/nfts"
 import { NFT } from "./useWalletNFTs"
 
 const farmAuthorityPubKey = new web3.PublicKey(
-  "9NcCHbUH5Me7nDb8G8ULEaEtQZdRY3oS23CFgdkK1sjT"
+  "Eqbyn7MKgdFGtPcWwMq92X5t1RdYCGgi5mkPA66vJAQE"
 )
 
 const rewardMint = new web3.PublicKey(
-  "FUGwDrBaPetAdeGq1VZDcT9sxAWCMmeqFwyr4qu4jg4m"
+  "CQn58YtdP7K1F2jpraozow9BrHhHHgiK6kgVNCpUbG5e"
 )
 
 export type StakeReceiptWithMetadata = StakeReceipt & {
