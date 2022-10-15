@@ -4,7 +4,6 @@ import Head from "next/head"
 import { Button, Flex, Heading, Text } from "@theme-ui/components"
 import { useMemo, useState } from "react"
 
-import Header from "@/components/Header/Header"
 import { NFTGallery } from "@/components/NFTGallery/NFTGallery"
 import CollectionItem from "@/components/NFTGallery/CollectionItem"
 import useWalletNFTs, { NFT } from "@/hooks/useWalletNFTs"
@@ -14,7 +13,9 @@ import { LoadingIcon } from "@/components/icons/LoadingIcon"
 import WalletManager from "@/components/WalletManager/WalletManager"
 import Image from "next/image"
 export default function Home() {
-  const { walletNFTs, fetchNFTs } = useWalletNFTs()
+  const { walletNFTs, fetchNFTs } = useWalletNFTs([
+    "J1E9xvBsE8gwfV8qXVxbQ6H2wfEEKjRaxS2ENiZm4h2D",
+  ])
   const [selectedWalletItems, setSelectedWalletItems] = useState<NFT[]>([])
   const [selectedVaultItems, setSelectedVaultItems] = useState<NFT[]>([])
 
@@ -107,12 +108,14 @@ export default function Home() {
           <Image width={164} height={68.2} src="/logo.png" />
           <WalletManager />
         </Flex>
-        <Heading mt="1rem" mb=".8rem" variant="heading1">
-          Staking
+        <Heading mt="1rem" mb=".8rem" variant="heading1" sx={{
+          fontFamily: 'Quarry Bones',
+          fontSize: '32px'
+        }}>
+          Stake your Skully
         </Heading>
-        <Text>Stake your NFTs now</Text>
 
-        {farmerAccount === false ? (
+        {!farmerAccount ? (
           <>
             <Button mt="3.2rem" onClick={initFarmer}>
               Init account
