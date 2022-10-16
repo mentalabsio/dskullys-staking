@@ -35,7 +35,7 @@ pub fn close_ata<'info>(
     authority: AccountInfo<'info>,
     destination: AccountInfo<'info>,
     program: AccountInfo<'info>,
-    seeds: &[&[u8]],
+    seeds: Option<&[&[u8]]>,
 ) -> Result<()> {
     let token_account: Account<TokenAccount> = Account::try_from(&account)?;
 
@@ -51,7 +51,11 @@ pub fn close_ata<'info>(
 
     let ctx = CpiContext::new(program, cpi_accounts);
 
-    token::close_account(ctx.with_signer(&[seeds]))
+    if let Some(seeds) = seeds {
+        return token::close_account(ctx.with_signer(&[seeds]));
+    }
+
+    token::close_account(ctx)
 }
 
 pub fn transfer_spl_ctx<'a, 'b, 'c, 'info>(

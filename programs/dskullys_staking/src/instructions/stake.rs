@@ -128,7 +128,7 @@ pub fn handler<'info>(
         ctx.accounts.owner.to_account_info(),
         ctx.accounts.owner.to_account_info(),
         ctx.accounts.token_program.to_account_info(),
-        &[],
+        None,
     )?;
 
     Ok(())

@@ -98,7 +98,7 @@ pub fn handler<'info>(
         ctx.accounts.farmer.to_account_info(),
         ctx.accounts.owner.to_account_info(),
         ctx.accounts.token_program.to_account_info(),
-        &ctx.accounts.farmer.seeds(),
+        Some(&ctx.accounts.farmer.seeds()),
     )?;
 
     Ok(())
