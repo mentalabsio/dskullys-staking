@@ -83,10 +83,13 @@ pub fn handler<'info>(
     ctx: Context<'_, '_, '_, 'info, Unstake<'info>>,
 ) -> Result<()> {
     let now = now_ts()?;
-    let farm = &mut ctx.accounts.farm;
-    let receipt = &ctx.accounts.stake_receipt;
 
+    let receipt = &ctx.accounts.stake_receipt;
+    ctx.accounts.release_gems(receipt.amount)?;
+
+    let farm = &mut ctx.accounts.farm;
     ctx.accounts.farmer.update_accrued_rewards(farm)?;
+
     ctx.accounts
         .farmer
         .decrease_reward_rate(receipt.reward_rate)?;

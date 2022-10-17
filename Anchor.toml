@@ -1,6 +1,9 @@
 [features]
 seeds = false
 
+[programs.localnet]
+dskullys_staking = "DkMt4VqQvgeivRjqpL3bQrwfRgKX4n1xRGCbF2acfSpC"
+
 [programs.mainnet]
 dskullys_staking = "DkMt4VqQvgeivRjqpL3bQrwfRgKX4n1xRGCbF2acfSpC"
 
