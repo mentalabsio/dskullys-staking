@@ -19,7 +19,7 @@ interface Attribute {
 
 const BUFF_ATTRIBUTE: Attribute = {
   trait_type: "Essence",
-  value: "true",
+  value: "Set",
 };
 
 export const hasBuffAttribute = async (
