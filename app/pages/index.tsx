@@ -105,7 +105,7 @@ export default function Home() {
           alignItems: 'center',
           justifyContent: 'space-between'
         }}>
-          <Image width={164} height={68.2} src="/logo.png" />
+          <Image width={246} height={102.3} src="/logo.png" />
           <WalletManager />
         </Flex>
         <Heading mt="1rem" mb=".8rem" variant="heading1" sx={{
