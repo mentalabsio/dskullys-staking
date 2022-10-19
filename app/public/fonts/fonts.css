@@ -10,5 +10,5 @@
 }
 @font-face {
   font-family: "Quarry Bones";
-  src: url("/fonts/Quarry-Bones.otf") format("otf"),
+  src: url("/fonts/Quarry-Bones.otf") format("opentype"),
 }
