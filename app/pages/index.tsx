@@ -178,7 +178,7 @@ export default function Home() {
                       }}
                     >
                       {(
-                        farmerAccount.accruedRewards.toNumber() / 1000000
+                        farmerAccount.accruedRewards.toNumber() / 1e9
                       ).toFixed(2)}
                     </b>
                   </Text>
@@ -193,7 +193,7 @@ export default function Home() {
                       }}
                     >
                       {(
-                        (farmerAccount?.totalRewardRate?.toNumber() / 1000000) *
+                        (farmerAccount?.totalRewardRate?.toNumber() / 1e9) *
                         86400
                       ).toFixed(2)}{" "}
                     </b>
@@ -201,7 +201,7 @@ export default function Home() {
                   </Text>
                 ) : null} */}
               </Flex>
-              <Button onClick={claim} disabled={farmerAccount?.accruedRewards?.toNumber() ? false : true}>Claim rewards</Button>
+              <Button onClick={claim} >Claim rewards</Button>
 
               <Flex
                 sx={{
@@ -308,7 +308,7 @@ export default function Home() {
                                 "> img": {
                                   border: "3px solid transparent",
                                   borderColor: isSelected
-                                    ? "primary"
+                                    ? "#F5F44E"
                                     : "transparent",
                                 },
                               }}
@@ -378,7 +378,7 @@ export default function Home() {
                                 "> img": {
                                   border: "3px solid transparent",
                                   borderColor: isSelected
-                                    ? "primary"
+                                    ? "#F5F44E"
                                     : "transparent",
                                 },
                               }}
