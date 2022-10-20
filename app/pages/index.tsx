@@ -12,6 +12,7 @@ import useStaking from "@/hooks/useStaking"
 import { LoadingIcon } from "@/components/icons/LoadingIcon"
 import WalletManager from "@/components/WalletManager/WalletManager"
 import Image from "next/image"
+import { useTotalStaked } from "@/hooks/useTotalStaked"
 import ProgressBar from "@/components/ProgressBar/ProgressBar"
 export default function Home() {
   const { walletNFTs, fetchNFTs } = useWalletNFTs([
@@ -30,6 +31,8 @@ export default function Home() {
     unstakeAll,
     fetchReceipts,
   } = useStaking()
+
+  const { totalStaked } = useTotalStaked()
 
   /**
    * Handles selected items.
@@ -128,10 +131,15 @@ export default function Home() {
         >
           <WalletManager />
         </Flex>
-        <Heading mt="1rem" mb=".8rem" variant="heading1" sx={{
-          fontFamily: 'Quarry Bones',
-          fontSize: '32px'
-        }}>
+        <Heading
+          mt="1rem"
+          mb=".8rem"
+          variant="heading1"
+          sx={{
+            fontFamily: "Quarry Bones",
+            fontSize: "32px",
+          }}
+        >
           Stake your Skully
         </Heading>
 
@@ -181,7 +189,8 @@ export default function Home() {
                 flexDirection: "column",
                 alignItems: "center",
                 gap: "1.6rem",
-                maxWidth: '1200px',
+                maxWidth: "1200px",
+                width: "100%",
               }}
             >
               <Flex
@@ -229,6 +238,7 @@ export default function Home() {
               >
                 <ProgressBar totalStaked={totalStaked} />
               </Flex>
+              <Button onClick={claim}>Claim rewards</Button>
 
               <Flex
                 sx={{
@@ -267,8 +277,8 @@ export default function Home() {
                 flexDirection: "column",
                 gap: "1.6rem",
                 alignSelf: "stretch",
-                maxWidth: '1200px',
-                margin: '3.2rem auto'
+                maxWidth: "1200px",
+                margin: "3.2rem auto",
               }}
             >
               <Tabs
