@@ -99,7 +99,7 @@ export default function Home() {
           padding: "0 1.6rem",
           width: "100%",
           minHeight: "100vh",
-          zIndex: 10,
+          zIndex: 1,
 
           "*": {
             zIndex: 1,
