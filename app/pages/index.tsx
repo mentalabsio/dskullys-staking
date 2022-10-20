@@ -68,7 +68,7 @@ export default function Home() {
         )
       }
 
-      return prev.length < 4 ? prev?.concat(item) : prev
+      return prev?.concat(item)
     })
   }
 
@@ -85,7 +85,10 @@ export default function Home() {
     <>
       <Head>
         <title>DSkullys Staking</title>
-        <meta name="description" content="Lock your DSKully and farm rewards." />
+        <meta
+          name="description"
+          content="Lock your DSKully and farm rewards."
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -235,9 +238,9 @@ export default function Home() {
                   maxWidth: "240px",
                   width: "100%",
 
-                  '@media screen and (min-width: 768px)': {
-                    maxWidth: '600px'
-                  }
+                  "@media screen and (min-width: 768px)": {
+                    maxWidth: "600px",
+                  },
                 }}
               >
                 <ProgressBar totalStaked={totalStaked} />
