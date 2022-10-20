@@ -334,6 +334,7 @@ export default function Home() {
 
                         return (
                           <Flex
+                            key={item.onchainMetadata.mint}
                             sx={{
                               flexDirection: "column",
                               alignItems: "center",
