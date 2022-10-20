@@ -12,6 +12,7 @@ import useStaking from "@/hooks/useStaking"
 import { LoadingIcon } from "@/components/icons/LoadingIcon"
 import WalletManager from "@/components/WalletManager/WalletManager"
 import Image from "next/image"
+import ProgressBar from "@/components/ProgressBar/ProgressBar"
 export default function Home() {
   const { walletNFTs, fetchNFTs } = useWalletNFTs([
     "Eq1ZERQ7yqU7LFuD9mHeHKvZFT899r7wSYpqrZ52HWE6",
@@ -220,7 +221,14 @@ export default function Home() {
                   </Text>
                 ) : null} */}
               </Flex>
-              <Button onClick={claim} >Claim rewards</Button>
+              <Flex
+                sx={{
+                  maxWidth: "600px",
+                  width: "100%",
+                }}
+              >
+                <ProgressBar totalStaked={totalStaked} />
+              </Flex>
 
               <Flex
                 sx={{
