@@ -97,7 +97,13 @@ pub fn metadata_creator(metadata: &MetadataAccount) -> Result<Pubkey> {
         .as_ref()
         .ok_or(ProgramError::InvalidAccountData)?
         .get(0)
-        .and_then(|creator| creator.verified.then_some(creator.address))
+        .and_then(|creator| {
+            if creator.verified {
+                Some(creator.address)
+            } else {
+                None
+            }
+        })
         .ok_or(ProgramError::InvalidAccountData)?)
 }
 
