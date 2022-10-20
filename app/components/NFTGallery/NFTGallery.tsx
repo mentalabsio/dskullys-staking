@@ -4,9 +4,10 @@ import { Flex, Spinner, Text } from "@theme-ui/components"
 import useWalletNFTs, { NFT } from "@/hooks/useWalletNFTs"
 import CollectionItem from "@/components/NFTGallery/CollectionItem"
 import { useWallet } from "@solana/wallet-adapter-react"
+import { StakeReceiptWithMetadata } from "@/hooks/useStaking"
 
 export type NFTCollectionProps = {
-  NFTs: NFT[]
+  NFTs: NFT[] | StakeReceiptWithMetadata[]
   children?: React.ReactChild
 }
 
@@ -26,9 +27,25 @@ export function NFTGallery({ NFTs, children }: NFTCollectionProps) {
               gridTemplateColumns: "1fr 1fr",
               gap: "1.6rem",
               alignItems: "center",
+              maxHeight: "250px",
+              overflowY: "scroll",
 
               "@media (min-width: 768px)": {
                 gridTemplateColumns: "1fr 1fr 1fr 1fr",
+              },
+
+              "&::-webkit-scrollbar": {
+                width: "1px",
+                display: NFTs.length > 4 ? "block" : "none",
+              },
+
+              "&::-webkit-scrollbar-track": {
+                boxShadow: "inset 0 0 6px rgba(255, 255, 255, 0.3)",
+              },
+
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: (theme) => theme.colors?.primary,
+                outline: (theme) => `1px solid ${theme.colors?.primary}`,
               },
             }}
           >
