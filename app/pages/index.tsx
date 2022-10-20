@@ -335,7 +335,7 @@ export default function Home() {
                                 "> img": {
                                   border: "3px solid transparent",
                                   borderColor: isSelected
-                                    ? "#F5F44E"
+                                    ? "highlight"
                                     : "transparent",
                                 },
                               }}
@@ -405,7 +405,7 @@ export default function Home() {
                                 "> img": {
                                   border: "3px solid transparent",
                                   borderColor: isSelected
-                                    ? "#F5F44E"
+                                    ? "highlight"
                                     : "transparent",
                                 },
                               }}
