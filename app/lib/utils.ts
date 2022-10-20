@@ -128,3 +128,23 @@ const fetchAccounts = (
     filters,
   });
 };
+
+export const findAllStakeReceipts = async (
+  connection: web3.Connection
+): Promise<StakeReceipt[]> => {
+  const filters = [accountFilter(StakeReceipt.discriminator)]
+
+  const accounts = await fetchAccounts(connection, filters)
+
+  const mapped = accounts
+    .map((account) => {
+      try {
+        return StakeReceipt.decode(account.account.data)
+      } catch (e) {
+        return null
+      }
+    })
+    .filter((value) => value !== null)
+
+  return mapped
+}
