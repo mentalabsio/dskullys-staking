@@ -14,6 +14,7 @@ import WalletManager from "@/components/WalletManager/WalletManager"
 import Image from "next/image"
 import { useTotalStaked } from "@/hooks/useTotalStaked"
 import ProgressBar from "@/components/ProgressBar/ProgressBar"
+import { Box } from "theme-ui"
 export default function Home() {
   const { walletNFTs, fetchNFTs } = useWalletNFTs([
     "Eq1ZERQ7yqU7LFuD9mHeHKvZFT899r7wSYpqrZ52HWE6",
@@ -98,27 +99,26 @@ export default function Home() {
           position: "relative",
           padding: "0 1.6rem",
           width: "100%",
-          minHeight: "100vh",
-          zIndex: 1,
+          maxHeight: "100vh",
 
           "*": {
             zIndex: 1,
           },
-
-          "&:before": {
-            content: '""',
-            backgroundImage: "url(/dskullys_background.jpg)",
-            backgroundSize: "cover",
-            position: "absolute",
-            top: "0px",
-            right: "0px",
-            bottom: "0px",
-            left: "0px",
-            zIndex: 0,
-            opacity: 0.8,
-          },
         }}
       >
+        <Box
+          sx={{
+            position: "absolute",
+            left: "0",
+            top: "0",
+            backgroundImage: "url(/dskullys_background.jpg)",
+            backgroundSize: "cover",
+            width: "100%",
+            minHeight: "100vh",
+            opacity: 0.7,
+            zIndex: 0,
+          }}
+        ></Box>
         <Flex
           sx={{
             paddingTop: "1rem",
