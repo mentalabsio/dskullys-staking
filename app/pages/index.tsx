@@ -94,9 +94,25 @@ export default function Home() {
           position: "relative",
           padding: "0 1.6rem",
           width: "100%",
-          backgroundImage: "url(/dskullys_background.jpg)",
-          backgroundSize: "cover",
-          minHeight: '100vh'
+          minHeight: "100vh",
+          zIndex: 10,
+
+          "*": {
+            zIndex: 1,
+          },
+
+          "&:before": {
+            content: '""',
+            backgroundImage: "url(/dskullys_background.jpg)",
+            backgroundSize: "cover",
+            position: "absolute",
+            top: "0px",
+            right: "0px",
+            bottom: "0px",
+            left: "0px",
+            zIndex: 0,
+            opacity: 0.8,
+          },
         }}
       >
         <Flex sx={{
