@@ -115,13 +115,16 @@ export default function Home() {
           },
         }}
       >
-        <Flex sx={{
-          paddingTop: '1rem',
-          width: '80%',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <Image width={246} height={102.3} src="/logo.png" />
+        <Flex
+          sx={{
+            paddingTop: "1rem",
+            width: "100%",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            maxWidth: "1200px",
+            margin: "2rem 0 4rem 0",
+          }}
+        >
           <WalletManager />
         </Flex>
         <Heading mt="1rem" mb=".8rem" variant="heading1" sx={{
