@@ -10,5 +10,6 @@
 }
 @font-face {
   font-family: "Quarry Bones";
-  src: url("/fonts/QuarryBones/QuarryBones.ttf") format("truetype"),
+  src: url("/fonts/QuarryBones/QuarryBonesRegular.woff2") format("woff2"),
+    url("/fonts/QuarryBones/QuarryBonesRegular.woff") format("woff");
 }

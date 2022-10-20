@@ -26,6 +26,12 @@ function App(props: AppProps) {
       <Head>
         {/** Load font styles directly on the document to prevent flashes */}
         <link href="/fonts/fonts.css" rel="stylesheet" />
+        <link
+          rel="preload"
+          href="/fonts/QuarryBones/QuarryBonesRegular.woff2"
+          as="font"
+          type="font/woff2"
+        />
       </Head>
 
       <WalletProvider>
