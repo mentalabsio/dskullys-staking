@@ -232,8 +232,12 @@ export default function Home() {
               </Flex>
               <Flex
                 sx={{
-                  maxWidth: "600px",
+                  maxWidth: "240px",
                   width: "100%",
+
+                  '@media screen and (min-width: 768px)': {
+                    maxWidth: '600px'
+                  }
                 }}
               >
                 <ProgressBar totalStaked={totalStaked} />
