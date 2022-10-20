@@ -387,47 +387,39 @@ export default function Home() {
                       Unstake selected
                     </Button>
                   </Flex>
-                  <Flex
-                    sx={{
-                      flexDirection: "column",
-                      gap: "1.6rem",
+                  <NFTGallery NFTs={orderedReceipts}>
+                    <>
+                      {orderedReceipts &&
+                        orderedReceipts.map((stake) => {
+                          const isSelected = selectedVaultItems.find(
+                            (NFT) =>
+                              NFT.onchainMetadata.mint ===
+                              stake.metadata.onchainMetadata.mint
+                          )
 
-                      "@media (min-width: 768px)": {
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr 1fr 1fr",
-                      },
-                    }}
-                  >
-                    {orderedReceipts &&
-                      orderedReceipts.map((stake) => {
-                        const isSelected = selectedVaultItems.find(
-                          (NFT) =>
-                            NFT.onchainMetadata.mint ===
-                            stake.metadata.onchainMetadata.mint
-                        )
-
-                        return (
-                          <Flex
-                            sx={{
-                              flexDirection: "column",
-                              alignItems: "center",
-                              gap: "1.6rem",
-                            }}
-                          >
-                            <CollectionItem
+                          return (
+                            <Flex
+                              key={stake.metadata.onchainMetadata.mint}
                               sx={{
-                                maxWidth: "16rem",
-                                "> img": {
-                                  border: "3px solid transparent",
-                                  borderColor: isSelected
-                                    ? "highlight"
-                                    : "transparent",
-                                },
+                                flexDirection: "column",
+                                alignItems: "center",
+                                gap: "1.6rem",
                               }}
-                              onClick={handleVaultItemClick}
-                              item={stake.metadata}
-                            />
-                            {/* <Flex
+                            >
+                              <CollectionItem
+                                sx={{
+                                  maxWidth: "16rem",
+                                  "> img": {
+                                    border: "3px solid transparent",
+                                    borderColor: isSelected
+                                      ? "highlight"
+                                      : "transparent",
+                                  },
+                                }}
+                                onClick={handleVaultItemClick}
+                                item={stake.metadata}
+                              />
+                              {/* <Flex
                                 sx={{
                                   gap: "1.6rem",
                                   alignItems: "center",
@@ -437,10 +429,11 @@ export default function Home() {
                               >
                                 <Button variant="resetted">Unstake</Button>
                               </Flex> */}
-                          </Flex>
-                        )
-                      })}
-                  </Flex>
+                            </Flex>
+                          )
+                        })}
+                    </>
+                  </NFTGallery>
                 </TabPanel>
               </Tabs>
 
