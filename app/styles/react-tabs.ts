@@ -24,13 +24,12 @@ export const reactTabsStyles = {
   } as any,
   ".react-tabs__tab--selected": {
     backgroundColor: "primary",
-    borderColor: "background2",
     color: "text",
     borderRadius: "5px 5px 0 0",
   },
   ".react-tabs__tab--disabled": { color: "GrayText", cursor: "default" },
   ".react-tabs__tab:focus": {
-    boxShadow: "0 0 5px hsl(208, 99%, 50%)",
+    boxShadow: "0 0 5px hsl(60, 89%, 63%)",
     borderColor: "background2",
     outline: "none",
   },
