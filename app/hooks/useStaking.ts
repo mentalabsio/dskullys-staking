@@ -24,7 +24,7 @@ export type StakeReceiptWithMetadata = StakeReceipt & {
 
 const useStaking = () => {
   const { connection } = useConnection()
-  const { publicKey, sendTransaction } = useWallet()
+  const { publicKey, sendTransaction, signAllTransactions } = useWallet()
   const [feedbackStatus, setFeedbackStatus] = useState("")
   const [farmerAccount, setFarmerAccount] = useState<Farmer | null>(
     null
@@ -150,7 +150,60 @@ const useStaking = () => {
     }
   }
 
-  const stakeAll = async (mints: web3.PublicKey[]) => {
+  const stakeAll = async (NFTs: NFT[]) => {
+    try {
+      const farm = findFarmAddress({
+        authority: farmAuthorityPubKey,
+        rewardMint,
+      })
+
+      setFeedbackStatus("Initializing...")
+
+      const stakingClient = StakingProgram(connection)
+
+
+      const ixs = await Promise.all(NFTs.map(async (NFT, index) => {
+        const { ix } = await stakingClient.createStakeInstruction({
+          farm,
+          mint: NFT.mint,
+          owner: publicKey,
+          amount: new BN(1)
+        })
+
+        return ix
+      }))
+
+
+      const txs: Transaction[] = []
+
+      const latest = await connection.getLatestBlockhash()
+
+      ixs.map(ixs => {
+        const tx = new Transaction()
+        tx.recentBlockhash = latest.blockhash
+        tx.feePayer = publicKey
+        tx.add(ixs)
+        txs.push(tx)
+      })
+
+      setFeedbackStatus("Awaiting approval...")
+
+      const signedTxs = await signAllTransactions(txs)
+
+      const txids = await Promise.all(signedTxs.map(async (signed) => {
+        return await connection.sendRawTransaction(signed.serialize())
+      }))
+
+      setFeedbackStatus("Confirming...")
+      await Promise.all(txids.map(async (txid) => {
+        return await connection.confirmTransaction(txid)
+      }))
+    } catch (e) {
+      setFeedbackStatus("Something went wrong. " + (e.message ? e.message : e))
+    }
+  }
+
+  const stakeSelected = async (mints: web3.PublicKey[]) => {
     try {
       const farm = findFarmAddress({
         authority: farmAuthorityPubKey,
@@ -278,6 +331,7 @@ const useStaking = () => {
     claim,
     initFarmer,
     stakeAll,
+    stakeSelected,
     unstakeAll,
     stakeReceipts,
     fetchReceipts,

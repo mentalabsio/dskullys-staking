@@ -15,10 +15,12 @@ import Image from "next/image"
 import { useTotalStaked } from "@/hooks/useTotalStaked"
 import ProgressBar from "@/components/ProgressBar/ProgressBar"
 import { Box } from "theme-ui"
+import { useWallet } from "@solana/wallet-adapter-react"
 export default function Home() {
   const { walletNFTs, fetchNFTs } = useWalletNFTs([
     "Eq1ZERQ7yqU7LFuD9mHeHKvZFT899r7wSYpqrZ52HWE6",
   ])
+  const {publicKey} = useWallet()
   const [selectedWalletItems, setSelectedWalletItems] = useState<NFT[]>([])
   const [selectedVaultItems, setSelectedVaultItems] = useState<NFT[]>([])
 
@@ -26,6 +28,7 @@ export default function Home() {
     farmerAccount,
     initFarmer,
     stakeAll,
+    stakeSelected,
     claim,
     stakeReceipts,
     feedbackStatus,
@@ -111,7 +114,7 @@ export default function Home() {
       >
         <Box
           sx={{
-            position: "absolute",
+            position: "fixed",
             left: "0",
             top: "0",
             backgroundImage: "url(/dskullys_background.jpg)",
@@ -146,10 +149,10 @@ export default function Home() {
           Stake your Skully
         </Heading>
 
-        {!farmerAccount ? (
+        {publicKey && !farmerAccount ? (
           <>
             <Button mt="3.2rem" onClick={initFarmer}>
-              Init account
+              Register as staker
             </Button>
             <Flex
               sx={{
@@ -310,20 +313,34 @@ export default function Home() {
                     }}
                   >
                     <Heading variant="heading2">Your wallet NFTs</Heading>
+                    <Flex>
                     <Button
                       onClick={async (e) => {
                         const allMints = selectedWalletItems.map(
                           (item) => item.mint
                         )
-                        await stakeAll(allMints)
+                        await stakeSelected(allMints)
                         await fetchNFTs()
                         await fetchReceipts()
                         setSelectedWalletItems([])
                       }}
                       disabled={!selectedWalletItems.length}
                     >
-                      Stake selected
+                      Stake Selected
                     </Button>
+                    <Button
+                      onClick={async (e) => {
+                
+                        await stakeAll(walletNFTs)
+                        await fetchNFTs()
+                        await fetchReceipts()
+                        setSelectedWalletItems([])
+                      }}
+                      disabled={!walletNFTs || !walletNFTs.length}
+                    >
+                      Stake All
+                    </Button>
+                    </Flex>
                   </Flex>
 
                   <NFTGallery NFTs={walletNFTs}>
