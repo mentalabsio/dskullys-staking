@@ -20,7 +20,7 @@ export default function Home() {
   const { walletNFTs, fetchNFTs } = useWalletNFTs([
     "Eq1ZERQ7yqU7LFuD9mHeHKvZFT899r7wSYpqrZ52HWE6",
   ])
-  const {publicKey} = useWallet()
+  const { publicKey } = useWallet()
   const [selectedWalletItems, setSelectedWalletItems] = useState<NFT[]>([])
   const [selectedVaultItems, setSelectedVaultItems] = useState<NFT[]>([])
 
@@ -121,7 +121,7 @@ export default function Home() {
             backgroundSize: "cover",
             width: "100%",
             minHeight: "100vh",
-            opacity: 0.7,
+            opacity: 0.6,
             zIndex: 0,
           }}
         ></Box>
@@ -313,33 +313,37 @@ export default function Home() {
                     }}
                   >
                     <Heading variant="heading2">Your wallet NFTs</Heading>
-                    <Flex>
-                    <Button
-                      onClick={async (e) => {
-                        const allMints = selectedWalletItems.map(
-                          (item) => item.mint
-                        )
-                        await stakeSelected(allMints)
-                        await fetchNFTs()
-                        await fetchReceipts()
-                        setSelectedWalletItems([])
+                    <Flex
+                      sx={{
+                        alignItems: "center",
+                        gap: ".8rem",
                       }}
-                      disabled={!selectedWalletItems.length}
                     >
-                      Stake Selected
-                    </Button>
-                    <Button
-                      onClick={async (e) => {
-                
-                        await stakeAll(walletNFTs)
-                        await fetchNFTs()
-                        await fetchReceipts()
-                        setSelectedWalletItems([])
-                      }}
-                      disabled={!walletNFTs || !walletNFTs.length}
-                    >
-                      Stake All
-                    </Button>
+                      <Button
+                        onClick={async (e) => {
+                          const allMints = selectedWalletItems.map(
+                            (item) => item.mint
+                          )
+                          await stakeSelected(allMints)
+                          await fetchNFTs()
+                          await fetchReceipts()
+                          setSelectedWalletItems([])
+                        }}
+                        disabled={!selectedWalletItems.length}
+                      >
+                        Stake Selected
+                      </Button>
+                      <Button
+                        onClick={async (e) => {
+                          await stakeAll(walletNFTs)
+                          await fetchNFTs()
+                          await fetchReceipts()
+                          setSelectedWalletItems([])
+                        }}
+                        disabled={!walletNFTs || !walletNFTs.length}
+                      >
+                        Stake All
+                      </Button>
                     </Flex>
                   </Flex>
 
