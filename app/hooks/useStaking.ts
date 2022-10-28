@@ -26,9 +26,7 @@ const useStaking = () => {
   const { connection } = useConnection()
   const { publicKey, sendTransaction, signAllTransactions } = useWallet()
   const [feedbackStatus, setFeedbackStatus] = useState("")
-  const [farmerAccount, setFarmerAccount] = useState<Farmer | null>(
-    null
-  )
+  const [farmerAccount, setFarmerAccount] = useState<Farmer | null>(null)
 
   const [stakeReceipts, setStakeReceipts] = useState<
     StakeReceiptWithMetadata[] | null
@@ -161,24 +159,24 @@ const useStaking = () => {
 
       const stakingClient = StakingProgram(connection)
 
+      const ixs = await Promise.all(
+        NFTs.map(async (NFT, index) => {
+          const { ix } = await stakingClient.createStakeInstruction({
+            farm,
+            mint: NFT.mint,
+            owner: publicKey,
+            amount: new BN(1),
+          })
 
-      const ixs = await Promise.all(NFTs.map(async (NFT, index) => {
-        const { ix } = await stakingClient.createStakeInstruction({
-          farm,
-          mint: NFT.mint,
-          owner: publicKey,
-          amount: new BN(1)
+          return ix
         })
-
-        return ix
-      }))
-
+      )
 
       const txs: Transaction[] = []
 
       const latest = await connection.getLatestBlockhash()
 
-      ixs.map(ixs => {
+      ixs.map((ixs) => {
         const tx = new Transaction()
         tx.recentBlockhash = latest.blockhash
         tx.feePayer = publicKey
@@ -190,14 +188,18 @@ const useStaking = () => {
 
       const signedTxs = await signAllTransactions(txs)
 
-      const txids = await Promise.all(signedTxs.map(async (signed) => {
-        return await connection.sendRawTransaction(signed.serialize())
-      }))
+      const txids = await Promise.all(
+        signedTxs.map(async (signed) => {
+          return await connection.sendRawTransaction(signed.serialize())
+        })
+      )
 
       setFeedbackStatus("Confirming...")
-      await Promise.all(txids.map(async (txid) => {
-        return await connection.confirmTransaction(txid)
-      }))
+      await Promise.all(
+        txids.map(async (txid) => {
+          return await connection.confirmTransaction(txid, "finalized")
+        })
+      )
     } catch (e) {
       setFeedbackStatus("Something went wrong. " + (e.message ? e.message : e))
     }
@@ -221,7 +223,7 @@ const useStaking = () => {
             farm,
             mint,
             owner: publicKey,
-            amount: new BN(1)
+            amount: new BN(1),
           })
 
           return ix
