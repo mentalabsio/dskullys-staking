@@ -229,20 +229,34 @@ const useStaking = () => {
         })
       )
 
-      const tx = new Transaction()
+      const txs: Transaction[] = []
 
-      tx.add(...ixs)
       const latest = await connection.getLatestBlockhash()
-      tx.recentBlockhash = latest.blockhash
-      tx.feePayer = publicKey
+
+      ixs.map((ixs) => {
+        const tx = new Transaction()
+        tx.recentBlockhash = latest.blockhash
+        tx.feePayer = publicKey
+        tx.add(ixs)
+        txs.push(tx)
+      })
 
       setFeedbackStatus("Awaiting approval...")
 
-      const txid = await sendTransaction(tx, connection)
+      const signedTxs = await signAllTransactions(txs)
+
+      const txids = await Promise.all(
+        signedTxs.map(async (signed) => {
+          return await connection.sendRawTransaction(signed.serialize())
+        })
+      )
 
       setFeedbackStatus("Confirming...")
-
-      await connection.confirmTransaction(txid)
+      await Promise.all(
+        txids.map(async (txid) => {
+          return await connection.confirmTransaction(txid, "confirmed")
+        })
+      )
     } catch (e) {
       setFeedbackStatus("Something went wrong. " + (e.message ? e.message : e))
     }
@@ -262,7 +276,7 @@ const useStaking = () => {
         authority: publicKey,
       })
 
-      const latest = await connection.getLatestBlockhash("finalized")
+      const latest = await connection.getLatestBlockhash("confirmed")
       const tx = new Transaction()
 
       tx.add(ix)
@@ -288,7 +302,6 @@ const useStaking = () => {
     feedbackStatus,
     claim,
     initFarmer,
-    stakeAll,
     stakeSelected,
     unstakeAll,
     stakeReceipts,
