@@ -54,7 +54,7 @@ export default function Home() {
         )
       }
 
-      return prev.length < 4 ? prev?.concat(item) : prev
+      return prev?.concat(item)
     })
   }
 
