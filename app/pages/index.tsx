@@ -335,14 +335,14 @@ export default function Home() {
                       <Button
                         onClick={async () => {
                           setSelectedWalletItems(
-                            selectedWalletItems.length === walletNFTs.length
+                            selectedWalletItems.length === walletNFTs?.length
                               ? []
                               : walletNFTs
                           )
                         }}
-                        disabled={!walletNFTs || !walletNFTs.length}
+                        disabled={!walletNFTs || !walletNFTs?.length}
                       >
-                        {selectedWalletItems.length === walletNFTs.length
+                        {selectedWalletItems.length === walletNFTs?.length
                           ? "Deselect"
                           : "Select"}{" "}
                         all
@@ -422,13 +422,13 @@ export default function Home() {
                       <Button
                         onClick={async () => {
                           setSelectedVaultItems(
-                            selectedVaultItems.length === orderedReceipts.length
+                            selectedVaultItems.length === orderedReceipts?.length
                               ? []
                               : orderedReceipts.map((stake) => stake.metadata)
                           )
                         }}
                       >
-                        {selectedVaultItems.length === orderedReceipts.length
+                        {selectedVaultItems.length === orderedReceipts?.length
                           ? "Deselect"
                           : "Select"}{" "}
                         all
