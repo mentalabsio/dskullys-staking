@@ -148,7 +148,7 @@ const useStaking = () => {
     }
   }
 
-  const stakeAll = async (NFTs: NFT[]) => {
+  const stakeSelected = async (mints: web3.PublicKey[]) => {
     try {
       const farm = findFarmAddress({
         authority: farmAuthorityPubKey,
@@ -159,11 +159,12 @@ const useStaking = () => {
 
       const stakingClient = StakingProgram(connection)
 
+      let additionals = []
       const ixs = await Promise.all(
-        NFTs.map(async (NFT, index) => {
+        mints.map(async (mint) => {
           const { ix } = await stakingClient.createStakeInstruction({
             farm,
-            mint: NFT.mint,
+            mint,
             owner: publicKey,
             amount: new BN(1),
           })
@@ -197,54 +198,9 @@ const useStaking = () => {
       setFeedbackStatus("Confirming...")
       await Promise.all(
         txids.map(async (txid) => {
-          return await connection.confirmTransaction(txid, "finalized")
+          return await connection.confirmTransaction(txid, "confirmed")
         })
       )
-    } catch (e) {
-      setFeedbackStatus("Something went wrong. " + (e.message ? e.message : e))
-    }
-  }
-
-  const stakeSelected = async (mints: web3.PublicKey[]) => {
-    try {
-      const farm = findFarmAddress({
-        authority: farmAuthorityPubKey,
-        rewardMint,
-      })
-
-      setFeedbackStatus("Initializing...")
-
-      const stakingClient = StakingProgram(connection)
-
-      let additionals = []
-      const ixs = await Promise.all(
-        mints.map(async (mint) => {
-          const { ix } = await stakingClient.createStakeInstruction({
-            farm,
-            mint,
-            owner: publicKey,
-            amount: new BN(1),
-          })
-
-          return ix
-        })
-      )
-
-      const tx = new Transaction()
-
-      tx.add(...additionals, ...ixs)
-
-      const latest = await connection.getLatestBlockhash()
-      tx.recentBlockhash = latest.blockhash
-      tx.feePayer = publicKey
-
-      setFeedbackStatus("Awaiting approval...")
-      const txid = await sendTransaction(tx, connection)
-
-      setFeedbackStatus("Confirming...")
-      await connection.confirmTransaction(txid)
-
-      console.log(txid)
     } catch (e) {
       setFeedbackStatus("Something went wrong. " + (e.message ? e.message : e))
     }
