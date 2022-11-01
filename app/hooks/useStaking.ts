@@ -36,6 +36,8 @@ const useStaking = () => {
    * Fetch all stake receipts
    */
   const fetchReceipts = useCallback(async () => {
+    const toastId = toast.loading("Fetching receipts...")
+
     if (publicKey) {
       try {
         const farm = findFarmAddress({
@@ -43,7 +45,6 @@ const useStaking = () => {
           rewardMint,
         })
 
-        toast("Fetching receipts...")
         const receipts = await findUserStakeReceipts(
           connection,
           farm,
@@ -54,7 +55,9 @@ const useStaking = () => {
           (receipt) => receipt.endTs === null
         )
 
-        toast("Fetching metadata...")
+        toast.loading("Fetching metadata...", {
+          id: toastId
+        })
         const withMetadatas = await Promise.all(
           stakingReceipts.map(async (receipt) => {
             const metadata = await getNFTMetadata(
@@ -69,9 +72,15 @@ const useStaking = () => {
         )
 
         setStakeReceipts(withMetadatas)
+
+        toast.success("Success!", {
+          id: toastId
+        })
       } catch (e) {
-        toast(
-          "Something went wrong. " + (e.message ? e.message : e)
+        toast.error(
+          "Something went wrong. " + (e.message ? e.message : e), {
+          id: toastId
+        }
         )
       }
     }
@@ -81,6 +90,8 @@ const useStaking = () => {
    * Fetch farmer account
    */
   const fetchFarmer = useCallback(async () => {
+    const toastId = toast.loading("Fetching farmer...")
+
     try {
       const farm = findFarmAddress({
         authority: farmAuthorityPubKey,
@@ -89,7 +100,6 @@ const useStaking = () => {
 
       const farmer = findFarmerAddress({ farm, owner: publicKey })
 
-      toast("Fetching farmer...")
       const farmerAccountData = await Farmer.fetch(connection, farmer)
 
       if (!farmerAccountData) {
@@ -99,8 +109,14 @@ const useStaking = () => {
       }
 
       setFarmerAccount(farmerAccountData)
+
+      toast.success("Success!", {
+        id: toastId
+      })
     } catch (e) {
-      toast("Something went wrong. " + (e.message ? e.message : e))
+      toast.error("Something went wrong. " + (e.message ? e.message : e), {
+        id: toastId
+      })
     }
   }, [publicKey])
 
@@ -112,6 +128,8 @@ const useStaking = () => {
   }, [publicKey])
 
   const initFarmer = async () => {
+    const toastId = toast.loading("Initializing transaction...")
+
     try {
       const stakingClient = StakingProgram(connection)
 
@@ -120,7 +138,6 @@ const useStaking = () => {
         rewardMint,
       })
 
-      toast("Initializing transaction...")
       const { ix } = await stakingClient.createInitializeFarmerInstruction({
         farm,
         owner: publicKey,
@@ -134,27 +151,34 @@ const useStaking = () => {
 
       tx.feePayer = publicKey
 
-      toast("Awaiting approval...")
+      toast.loading("Awaiting approval...", {
+        id: toastId
+      })
       const txid = await sendTransaction(tx, connection)
 
       await connection.confirmTransaction(txid)
 
-      toast("Success!")
+      toast.success("Success!", {
+        id: toastId
+      })
 
       await fetchFarmer()
     } catch (e) {
-      toast("Something went wrong. " + (e.message ? e.message : e))
+      toast.error("Something went wrong. " + (e.message ? e.message : e), {
+        id: toastId
+      })
     }
   }
 
   const stakeSelected = async (mints: web3.PublicKey[]) => {
+    const toastId = toast.loading("Initializing...")
+
     try {
       const farm = findFarmAddress({
         authority: farmAuthorityPubKey,
         rewardMint,
       })
 
-      toast("Initializing...")
 
       const stakingClient = StakingProgram(connection)
 
@@ -184,7 +208,9 @@ const useStaking = () => {
         txs.push(tx)
       })
 
-      toast("Awaiting approval...")
+      toast.loading("Awaiting approval...", {
+        id: toastId
+      })
 
       const signedTxs = await signAllTransactions(txs)
 
@@ -194,18 +220,27 @@ const useStaking = () => {
         })
       )
 
-      toast("Confirming...")
+      toast.loading("Confirming...", {
+        id: toastId
+      })
       await Promise.all(
         txids.map(async (txid) => {
           return await connection.confirmTransaction(txid, "confirmed")
         })
       )
+      toast.success("Success!", {
+        id: toastId
+      })
     } catch (e) {
-      toast("Something went wrong. " + (e.message ? e.message : e))
+      toast.error("Something went wrong. " + (e.message ? e.message : e), {
+        id: toastId
+      })
     }
   }
 
   const unstakeAll = async (mints: web3.PublicKey[]) => {
+    const toastId = toast.loading("Initializing...")
+
     try {
       const farm = findFarmAddress({
         authority: farmAuthorityPubKey,
@@ -214,7 +249,6 @@ const useStaking = () => {
 
       const stakingClient = StakingProgram(connection)
 
-      toast("Initializing...")
 
       const ixs = await Promise.all(
         mints.map(async (mint) => {
@@ -240,7 +274,9 @@ const useStaking = () => {
         txs.push(tx)
       })
 
-      toast("Awaiting approval...")
+      toast.loading("Awaiting approval...", {
+        id: toastId
+      })
 
       const signedTxs = await signAllTransactions(txs)
 
@@ -250,18 +286,28 @@ const useStaking = () => {
         })
       )
 
-      toast("Confirming...")
+      toast.loading("Confirming...", {
+        id: toastId
+      })
       await Promise.all(
         txids.map(async (txid) => {
           return await connection.confirmTransaction(txid, "confirmed")
         })
       )
+
+      toast.success("Success!", {
+        id: toastId
+      })
     } catch (e) {
-      toast("Something went wrong. " + (e.message ? e.message : e))
+      toast.error("Something went wrong. " + (e.message ? e.message : e), {
+        id: toastId
+      })
     }
   }
 
   const claim = async () => {
+    const toastId = toast.loading("Initializing...")
+
     try {
       const farm = findFarmAddress({
         authority: farmAuthorityPubKey,
@@ -269,6 +315,7 @@ const useStaking = () => {
       })
 
       const stakingClient = StakingProgram(connection)
+
 
       const { ix } = await stakingClient.createClaimRewardsInstruction({
         farm,
@@ -282,17 +329,25 @@ const useStaking = () => {
       tx.recentBlockhash = latest.blockhash
       tx.feePayer = publicKey
 
-      toast("Awaiting approval...")
+      toast.loading("Awaiting approval...", {
+        id: toastId
+      })
 
       const txid = await sendTransaction(tx, connection)
 
-      toast("Confirming...")
+      toast.loading("Confirming...", {
+        id: toastId
+      })
 
       await connection.confirmTransaction(txid)
 
-      toast("Success!")
+      toast.success("Success!", {
+        id: toastId
+      })
     } catch (e) {
-      toast("Something went wrong. " + (e.message ? e.message : e))
+      toast.error("Something went wrong. " + (e.message ? e.message : e), {
+        id: toastId
+      })
     }
   }
 
