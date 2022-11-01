@@ -14,6 +14,7 @@ import { useTotalStaked } from "@/hooks/useTotalStaked"
 import ProgressBar from "@/components/ProgressBar/ProgressBar"
 import { Box } from "theme-ui"
 import { useWallet } from "@solana/wallet-adapter-react"
+import { Toaster } from "react-hot-toast"
 export default function Home() {
   const { walletNFTs, fetchNFTs } = useWalletNFTs([
     "Eq1ZERQ7yqU7LFuD9mHeHKvZFT899r7wSYpqrZ52HWE6",
@@ -146,6 +147,7 @@ export default function Home() {
             zIndex: 0,
           }}
         ></Box>
+        <Toaster />
         <Flex
           sx={{
             paddingTop: "1rem",

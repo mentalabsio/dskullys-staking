@@ -9,6 +9,7 @@ import { findFarmAddress, findFarmerAddress } from "lib/pda"
 import { findUserStakeReceipts } from "lib/utils"
 import { getNFTMetadata } from "utils/nfts"
 import { NFT } from "./useWalletNFTs"
+import toast from 'react-hot-toast'
 
 const farmAuthorityPubKey = new web3.PublicKey(
   "Eqbyn7MKgdFGtPcWwMq92X5t1RdYCGgi5mkPA66vJAQE"
@@ -25,7 +26,6 @@ export type StakeReceiptWithMetadata = StakeReceipt & {
 const useStaking = () => {
   const { connection } = useConnection()
   const { publicKey, sendTransaction, signAllTransactions } = useWallet()
-  const [feedbackStatus, setFeedbackStatus] = useState("")
   const [farmerAccount, setFarmerAccount] = useState<Farmer | null>(null)
 
   const [stakeReceipts, setStakeReceipts] = useState<
@@ -43,7 +43,7 @@ const useStaking = () => {
           rewardMint,
         })
 
-        setFeedbackStatus("Fetching receipts...")
+        toast("Fetching receipts...")
         const receipts = await findUserStakeReceipts(
           connection,
           farm,
@@ -54,7 +54,7 @@ const useStaking = () => {
           (receipt) => receipt.endTs === null
         )
 
-        setFeedbackStatus("Fetching metadatas...")
+        toast("Fetching metadata...")
         const withMetadatas = await Promise.all(
           stakingReceipts.map(async (receipt) => {
             const metadata = await getNFTMetadata(
@@ -69,9 +69,8 @@ const useStaking = () => {
         )
 
         setStakeReceipts(withMetadatas)
-        setFeedbackStatus("")
       } catch (e) {
-        setFeedbackStatus(
+        toast(
           "Something went wrong. " + (e.message ? e.message : e)
         )
       }
@@ -88,8 +87,9 @@ const useStaking = () => {
         rewardMint,
       })
 
-      setFeedbackStatus("Fetching farmer...")
       const farmer = findFarmerAddress({ farm, owner: publicKey })
+
+      toast("Fetching farmer...")
       const farmerAccountData = await Farmer.fetch(connection, farmer)
 
       if (!farmerAccountData) {
@@ -99,9 +99,8 @@ const useStaking = () => {
       }
 
       setFarmerAccount(farmerAccountData)
-      setFeedbackStatus("")
     } catch (e) {
-      setFeedbackStatus("Something went wrong. " + (e.message ? e.message : e))
+      toast("Something went wrong. " + (e.message ? e.message : e))
     }
   }, [publicKey])
 
@@ -121,7 +120,7 @@ const useStaking = () => {
         rewardMint,
       })
 
-      setFeedbackStatus("Initializing transaction...")
+      toast("Initializing transaction...")
       const { ix } = await stakingClient.createInitializeFarmerInstruction({
         farm,
         owner: publicKey,
@@ -135,16 +134,16 @@ const useStaking = () => {
 
       tx.feePayer = publicKey
 
-      setFeedbackStatus("Awaiting approval...")
+      toast("Awaiting approval...")
       const txid = await sendTransaction(tx, connection)
 
       await connection.confirmTransaction(txid)
 
-      setFeedbackStatus("Success!")
+      toast("Success!")
 
       await fetchFarmer()
     } catch (e) {
-      setFeedbackStatus("Something went wrong. " + (e.message ? e.message : e))
+      toast("Something went wrong. " + (e.message ? e.message : e))
     }
   }
 
@@ -155,7 +154,7 @@ const useStaking = () => {
         rewardMint,
       })
 
-      setFeedbackStatus("Initializing...")
+      toast("Initializing...")
 
       const stakingClient = StakingProgram(connection)
 
@@ -185,7 +184,7 @@ const useStaking = () => {
         txs.push(tx)
       })
 
-      setFeedbackStatus("Awaiting approval...")
+      toast("Awaiting approval...")
 
       const signedTxs = await signAllTransactions(txs)
 
@@ -195,14 +194,14 @@ const useStaking = () => {
         })
       )
 
-      setFeedbackStatus("Confirming...")
+      toast("Confirming...")
       await Promise.all(
         txids.map(async (txid) => {
           return await connection.confirmTransaction(txid, "confirmed")
         })
       )
     } catch (e) {
-      setFeedbackStatus("Something went wrong. " + (e.message ? e.message : e))
+      toast("Something went wrong. " + (e.message ? e.message : e))
     }
   }
 
@@ -215,7 +214,7 @@ const useStaking = () => {
 
       const stakingClient = StakingProgram(connection)
 
-      setFeedbackStatus("Initializing...")
+      toast("Initializing...")
 
       const ixs = await Promise.all(
         mints.map(async (mint) => {
@@ -241,7 +240,7 @@ const useStaking = () => {
         txs.push(tx)
       })
 
-      setFeedbackStatus("Awaiting approval...")
+      toast("Awaiting approval...")
 
       const signedTxs = await signAllTransactions(txs)
 
@@ -251,14 +250,14 @@ const useStaking = () => {
         })
       )
 
-      setFeedbackStatus("Confirming...")
+      toast("Confirming...")
       await Promise.all(
         txids.map(async (txid) => {
           return await connection.confirmTransaction(txid, "confirmed")
         })
       )
     } catch (e) {
-      setFeedbackStatus("Something went wrong. " + (e.message ? e.message : e))
+      toast("Something went wrong. " + (e.message ? e.message : e))
     }
   }
 
@@ -283,23 +282,22 @@ const useStaking = () => {
       tx.recentBlockhash = latest.blockhash
       tx.feePayer = publicKey
 
-      setFeedbackStatus("Awaiting approval...")
+      toast("Awaiting approval...")
 
       const txid = await sendTransaction(tx, connection)
 
-      setFeedbackStatus("Confirming...")
+      toast("Confirming...")
 
       await connection.confirmTransaction(txid)
 
-      setFeedbackStatus("Success!")
+      toast("Success!")
     } catch (e) {
-      setFeedbackStatus("Something went wrong. " + (e.message ? e.message : e))
+      toast("Something went wrong. " + (e.message ? e.message : e))
     }
   }
 
   return {
     farmerAccount,
-    feedbackStatus,
     claim,
     initFarmer,
     stakeSelected,
