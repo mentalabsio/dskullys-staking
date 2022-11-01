@@ -2,7 +2,7 @@
 import Head from "next/head"
 
 import { Button, Flex, Heading, Text } from "@theme-ui/components"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 
 import { NFTGallery } from "@/components/NFTGallery/NFTGallery"
 import CollectionItem from "@/components/NFTGallery/CollectionItem"
@@ -15,6 +15,23 @@ import ProgressBar from "@/components/ProgressBar/ProgressBar"
 import { Box } from "theme-ui"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { Toaster } from "react-hot-toast"
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect
+
+function useInterval(callback: () => void, delay: number) {
+  const savedCallback = useRef(callback)
+  useIsomorphicLayoutEffect(() => {
+    savedCallback.current = callback
+  }, [callback])
+  useEffect(() => {
+    if (!delay && delay !== 0) {
+      return
+    }
+    const id = setInterval(() => savedCallback.current(), delay)
+    return () => clearInterval(id)
+  }, [delay])
+}
+
 export default function Home() {
   const { walletNFTs, fetchNFTs } = useWalletNFTs([
     "Eq1ZERQ7yqU7LFuD9mHeHKvZFT899r7wSYpqrZ52HWE6",
@@ -23,7 +40,6 @@ export default function Home() {
   const [selectedWalletItems, setSelectedWalletItems] = useState<NFT[]>([])
   const [selectedVaultItems, setSelectedVaultItems] = useState<NFT[]>([])
   const [rewardsCounter, setRewardsCounter] = useState<number>(0)
-  const [rewardsInterval, setRewardsInterval] = useState(null)
 
   const {
     farmerAccount,
@@ -83,32 +99,13 @@ export default function Home() {
     )
   }, [stakeReceipts])
 
-  // rewards counter interval
-  useEffect(() => {
-    if (farmerAccount && orderedReceipts?.length && !rewardsInterval) {
-      const interval = setInterval(() => {
-        const currentRewards =
-          farmerAccount?.accruedRewards?.toNumber() +
-          (new Date().getTime() / 1000 -
-            farmerAccount?.lastUpdate?.toNumber()) *
-            farmerAccount?.totalRewardRate?.toNumber()
-        setRewardsCounter(currentRewards)
-      }, 1000)
-      setRewardsInterval(interval)
-    } else if (
-      rewardsInterval &&
-      (!farmerAccount || !orderedReceipts?.length)
-    ) {
-      clearInterval(rewardsInterval)
-      setRewardsInterval(null)
-    }
-  }, [
-    farmerAccount,
-    setRewardsCounter,
-    orderedReceipts,
-    rewardsInterval,
-    setRewardsInterval,
-  ])
+  useInterval(() => {
+    const currentRewards =
+      farmerAccount?.accruedRewards?.toNumber() +
+      (new Date().getTime() / 1000 - farmerAccount?.lastUpdate?.toNumber()) *
+        farmerAccount?.totalRewardRate?.toNumber()
+    setRewardsCounter(currentRewards | 0)
+  }, 1000)
 
   return (
     <>
