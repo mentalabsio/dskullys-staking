@@ -129,7 +129,7 @@ export default function Home() {
           width: "100%",
           maxHeight: "100vh",
 
-          "*": {
+          ">*": {
             zIndex: 1,
           },
         }}
@@ -229,7 +229,7 @@ export default function Home() {
               <Flex
                 sx={{
                   flexDirection: "column",
-                  alignItems: 'center',
+                  alignItems: "center",
                   justifyContent: "center",
                 }}
               >
@@ -237,37 +237,36 @@ export default function Home() {
                   <Flex
                     sx={{
                       alignItems: "center",
-                      justifyContent: 'center'
+                      justifyContent: "center",
                     }}
                   >
                     <Box
                       sx={{
                         backgroundColor: "lightgreen",
-                        borderRadius: '30px',
-                        width: '5px',
-                        height: '5px'
+                        borderRadius: "30px",
+                        width: "5px",
+                        height: "5px",
+                      }}
+                    ></Box>
+
+                    <Text
+                      sx={{
+                        fontSize: "1rem",
+                        marginLeft: "0.5rem",
                       }}
                     >
-                    </Box>
-                     
+                      {(rewardsCounter / 1e9).toFixed(5)}{" "}
                       <Text
                         sx={{
-                          fontSize: "1rem",
-                          marginLeft: "0.5rem",
+                          color: "#fff",
                         }}
                       >
-                        {(rewardsCounter / 1e9).toFixed(5)}{" "}
-                        <Text
-                          sx={{
-                            color: "#fff",
-                          }}
-                        >
-                          $SKULL
-                        </Text>
+                        $SKULL
                       </Text>
-                    
+                    </Text>
                   </Flex>
                 ) : null}
+                <Button
                   onClick={async () => {
                     await claim()
                     await fetchNFTs()
@@ -275,6 +274,7 @@ export default function Home() {
                   }}
                 >
                   Claim rewards
+                </Button>
               </Flex>
             </Flex>
 
