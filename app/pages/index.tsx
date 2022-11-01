@@ -85,13 +85,13 @@ export default function Home() {
 
   // rewards counter interval
   useEffect(() => {
-    const currentRewards =
-      farmerAccount?.accruedRewards?.toNumber() +
-      (new Date().getTime() / 1000 - farmerAccount.lastUpdate.toNumber()) *
-      farmerAccount?.totalRewardRate?.toNumber()
-
     if (farmerAccount && orderedReceipts?.length && !rewardsInterval) {
       const interval = setInterval(() => {
+        const currentRewards =
+          farmerAccount?.accruedRewards?.toNumber() +
+          (new Date().getTime() / 1000 -
+            farmerAccount?.lastUpdate?.toNumber()) *
+            farmerAccount?.totalRewardRate?.toNumber()
         setRewardsCounter(currentRewards)
       }, 1000)
       setRewardsInterval(interval)
