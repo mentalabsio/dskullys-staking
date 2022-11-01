@@ -268,7 +268,13 @@ export default function Home() {
                     
                   </Flex>
                 ) : null}
-                <Button onClick={claim}>Claim rewards</Button>
+                  onClick={async () => {
+                    await claim()
+                    await fetchNFTs()
+                    await fetchReceipts()
+                  }}
+                >
+                  Claim rewards
               </Flex>
             </Flex>
 
