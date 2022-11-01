@@ -2,16 +2,14 @@
 import Head from "next/head"
 
 import { Button, Flex, Heading, Text } from "@theme-ui/components"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import { NFTGallery } from "@/components/NFTGallery/NFTGallery"
 import CollectionItem from "@/components/NFTGallery/CollectionItem"
 import useWalletNFTs, { NFT } from "@/hooks/useWalletNFTs"
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs"
 import useStaking from "@/hooks/useStaking"
-import { LoadingIcon } from "@/components/icons/LoadingIcon"
 import WalletManager from "@/components/WalletManager/WalletManager"
-import Image from "next/image"
 import { useTotalStaked } from "@/hooks/useTotalStaked"
 import ProgressBar from "@/components/ProgressBar/ProgressBar"
 import { Box } from "theme-ui"
@@ -23,6 +21,8 @@ export default function Home() {
   const { publicKey } = useWallet()
   const [selectedWalletItems, setSelectedWalletItems] = useState<NFT[]>([])
   const [selectedVaultItems, setSelectedVaultItems] = useState<NFT[]>([])
+  const [rewardsCounter, setRewardsCounter] = useState<number>(0)
+  const [rewardsInterval, setRewardsInterval] = useState(null)
 
   const {
     farmerAccount,
@@ -30,7 +30,6 @@ export default function Home() {
     stakeSelected,
     claim,
     stakeReceipts,
-    feedbackStatus,
     unstakeAll,
     fetchReceipts,
   } = useStaking()
@@ -82,6 +81,29 @@ export default function Home() {
       )
     )
   }, [stakeReceipts])
+
+  // rewards counter interval
+  useEffect(() => {
+    if (farmerAccount && orderedReceipts?.length && !rewardsInterval) {
+      const interval = setInterval(() => {
+        const currentRewards =
+          farmerAccount?.accruedRewards?.toNumber() +
+          (new Date().getTime() / 1000 - farmerAccount.lastUpdate.toNumber()) *
+            farmerAccount?.totalRewardRate?.toNumber()
+        setRewardsCounter(currentRewards)
+      }, 1000)
+      setRewardsInterval(interval)
+    } else if (rewardsInterval && (!farmerAccount || !orderedReceipts?.length)) {
+      clearInterval(rewardsInterval)
+      setRewardsInterval(null)
+    }
+  }, [
+    farmerAccount,
+    setRewardsCounter,
+    orderedReceipts,
+    rewardsInterval,
+    setRewardsInterval,
+  ])
 
   return (
     <>
@@ -153,36 +175,6 @@ export default function Home() {
             <Button mt="3.2rem" onClick={initFarmer}>
               Register as staker
             </Button>
-            <Flex
-              sx={{
-                alignItems: "center",
-                gap: ".8rem",
-                margin: ".8rem 0",
-              }}
-            >
-              {feedbackStatus ? (
-                <>
-                  {feedbackStatus.indexOf("Success") === -1 ? (
-                    <LoadingIcon size="1.6rem" />
-                  ) : null}
-                  {"  "}{" "}
-                  <Text
-                    variant="small"
-                    sx={{
-                      color:
-                        feedbackStatus.indexOf("Success") !== -1
-                          ? "success"
-                          : "text",
-                    }}
-                  >
-                    {feedbackStatus}
-                  </Text>
-                </>
-              ) : (
-                ""
-              )}
-              &nbsp;
-            </Flex>
           </>
         ) : null}
 
@@ -203,21 +195,6 @@ export default function Home() {
                   gap: "1.6rem",
                 }}
               >
-                {/* {farmerAccount.accruedRewards.toNumber() ? (
-                  <Text>
-                    Rewards:{" "}
-                    <b
-                      sx={{
-                        fontSize: "1.6rem",
-                      }}
-                    >
-                      {(
-                        farmerAccount.accruedRewards.toNumber() / 1e9
-                      ).toFixed(2)}
-                    </b>
-                  </Text>
-                ) : null} */}
-
                 {/* {farmerAccount?.totalRewardRate?.toNumber() ? (
                   <Text>
                     Rate:{" "}
@@ -247,37 +224,49 @@ export default function Home() {
               >
                 <ProgressBar totalStaked={totalStaked} />
               </Flex>
-              <Button onClick={claim}>Claim rewards</Button>
-
               <Flex
                 sx={{
-                  alignItems: "center",
-                  gap: ".8rem",
-                  margin: ".8rem 0",
+                  flexDirection: "column",
+                  alignItems: 'center',
+                  justifyContent: "center",
                 }}
               >
-                {feedbackStatus ? (
-                  <>
-                    {feedbackStatus.indexOf("Success") === -1 ? (
-                      <LoadingIcon size="1.6rem" />
-                    ) : null}
-                    {"  "}{" "}
-                    <Text
-                      variant="small"
+                {rewardsCounter && orderedReceipts?.length ? (
+                  <Flex
+                    sx={{
+                      alignItems: "center",
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <Box
                       sx={{
-                        color:
-                          feedbackStatus.indexOf("Success") !== -1
-                            ? "success"
-                            : "text",
+                        backgroundColor: "lightgreen",
+                        borderRadius: '30px',
+                        width: '5px',
+                        height: '5px'
                       }}
                     >
-                      {feedbackStatus}
-                    </Text>
-                  </>
-                ) : (
-                  ""
-                )}
-                &nbsp;
+                    </Box>
+                     
+                      <Text
+                        sx={{
+                          fontSize: "1rem",
+                          marginLeft: "0.5rem",
+                        }}
+                      >
+                        {(rewardsCounter / 1e9).toFixed(5)}{" "}
+                        <Text
+                          sx={{
+                            color: "#fff",
+                          }}
+                        >
+                          $SKULL
+                        </Text>
+                      </Text>
+                    
+                  </Flex>
+                ) : null}
+                <Button onClick={claim}>Claim rewards</Button>
               </Flex>
             </Flex>
 
@@ -422,7 +411,8 @@ export default function Home() {
                       <Button
                         onClick={async () => {
                           setSelectedVaultItems(
-                            selectedVaultItems.length === orderedReceipts?.length
+                            selectedVaultItems.length ===
+                              orderedReceipts?.length
                               ? []
                               : orderedReceipts.map((stake) => stake.metadata)
                           )
