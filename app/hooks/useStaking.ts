@@ -127,6 +127,21 @@ const useStaking = () => {
     }
   }, [publicKey])
 
+  useEffect(() => {
+    if (publicKey) {
+      const farm = findFarmAddress({
+        authority: farmAuthorityPubKey,
+        rewardMint,
+      })
+
+      const farmer = findFarmerAddress({ farm, owner: publicKey })
+
+      connection.onAccountChange(farmer, () => {
+        fetchFarmer()
+      }, 'confirmed')
+    }
+  }, [publicKey, connection, fetchFarmer])
+
   const initFarmer = async () => {
     const toastId = toast.loading("Initializing transaction...")
 
