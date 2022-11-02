@@ -103,7 +103,7 @@ export default function Home() {
     const currentRewards =
       farmerAccount?.accruedRewards?.toNumber() +
       (new Date().getTime() / 1000 - farmerAccount?.lastUpdate?.toNumber()) *
-      farmerAccount?.totalRewardRate?.toNumber()
+        farmerAccount?.totalRewardRate?.toNumber()
     setRewardsCounter(currentRewards)
   }, 1000)
 
@@ -252,18 +252,11 @@ export default function Home() {
 
                     <Text
                       sx={{
-                        fontSize: "1rem",
+                        fontSize: "1.2rem",
                         marginLeft: "0.5rem",
                       }}
                     >
-                      {(rewardsCounter / 1e9).toFixed(5)}{" "}
-                      <Text
-                        sx={{
-                          color: "#fff",
-                        }}
-                      >
-                        $SKULL
-                      </Text>
+                      {(rewardsCounter / 1e9).toFixed(5)} <Text>$SKULL</Text>
                     </Text>
                   </Flex>
                 ) : null}
