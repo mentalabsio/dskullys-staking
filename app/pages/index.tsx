@@ -103,8 +103,8 @@ export default function Home() {
     const currentRewards =
       farmerAccount?.accruedRewards?.toNumber() +
       (new Date().getTime() / 1000 - farmerAccount?.lastUpdate?.toNumber()) *
-        farmerAccount?.totalRewardRate?.toNumber()
-    setRewardsCounter(currentRewards | 0)
+      farmerAccount?.totalRewardRate?.toNumber()
+    setRewardsCounter(currentRewards)
   }, 1000)
 
   return (
