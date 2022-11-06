@@ -7,6 +7,8 @@ import { fromTxError } from "./gen/errors";
 import { PROGRAM_ID } from "./gen/programId";
 import { findFarmerAddress } from "./pda";
 
+import { isEqual } from 'lodash'
+
 type ProgramAccounts = {
   pubkey: web3.PublicKey;
   account: web3.AccountInfo<Buffer>;
@@ -19,7 +21,7 @@ interface Attribute {
 
 const BUFF_ATTRIBUTE: Attribute = {
   trait_type: "Essence",
-  value: "Set",
+  value: "Set"
 };
 
 export const hasBuffAttribute = async (
@@ -37,7 +39,7 @@ export const hasBuffAttribute = async (
         `Failed to fetch off-chain metadata for mint ${mintAddress}.`
       );
 
-    return data.attributes?.some((a) => a === BUFF_ATTRIBUTE);
+    return data.attributes?.some((a) => isEqual(a, BUFF_ATTRIBUTE))
   } catch {
     return false;
   }
