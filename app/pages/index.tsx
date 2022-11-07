@@ -64,7 +64,8 @@ export default function Home() {
     fetchReceipts,
   } = useStaking()
 
-  const { totalStaked } = useTotalStaked()
+  const { totalStaked, totalRewardsEmission, averageStakedAmount } =
+    useTotalStaked()
 
   /**
    * Handles selected items.
@@ -150,8 +151,6 @@ export default function Home() {
     if (!chainData) fetchChainData()
   }, [chainData])
 
-  console.log(collectionData)
-
   return (
     <>
       <Head>
@@ -171,7 +170,7 @@ export default function Home() {
           alignSelf: "stretch",
           margin: "0",
           position: "relative",
-          padding: "0 1.6rem",
+          padding: "0 1rem",
           width: "100%",
           maxHeight: "100vh",
 
