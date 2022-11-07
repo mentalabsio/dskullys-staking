@@ -196,176 +196,338 @@ export default function Home() {
           }}
         ></Box>
         <Toaster />
-        <Flex
-          sx={{
-            paddingTop: "1rem",
-            width: "100%",
-            alignItems: "center",
-            justifyContent: "flex-end",
-            maxWidth: "1200px",
-            margin: "2rem 0 4rem 0",
-          }}
-        >
-          <WalletManager />
-        </Flex>
-        <Heading
-          mt="1rem"
-          mb=".8rem"
-          sx={{
-            fontFamily: "Quarry Bones",
-            fontSize: "32px",
-          }}
-        >
-          Stake your Skully
-        </Heading>
-
-        {publicKey && !farmerAccount ? (
-          <>
-            <Button mt="3.2rem" onClick={initFarmer}>
-              Register as staker
-            </Button>
-          </>
-        ) : null}
-
-        {farmerAccount ? (
-          <>
+        <>
+          <Flex
+            sx={{
+              flexDirection: "column",
+              maxWidth: "1200px",
+              margin: "3.2rem auto",
+            }}
+          >
             <Flex
-              my="3.2rem"
               sx={{
                 flexDirection: "column",
-                alignItems: "center",
-                gap: "1.6rem",
-                maxWidth: "1200px",
-                width: "100%",
+                alignItems: "flex-end",
+                justifyContent: "space-between",
+                margin: "0.5rem 0",
+
+                "@media screen and (min-width: 768px)": {
+                  flexDirection: "row",
+                },
               }}
             >
               <Flex
                 sx={{
-                  gap: "1.6rem",
-                }}
-              >
-                {/* {farmerAccount?.totalRewardRate?.toNumber() ? (
-                  <Text>
-                    Rate:{" "}
-                    <b
-                      sx={{
-                        fontSize: "1.6rem",
-                      }}
-                    >
-                      {(
-                        (farmerAccount?.totalRewardRate?.toNumber() / 1e9) *
-                        86400
-                      ).toFixed(2)}{" "}
-                    </b>
-                    per day
-                  </Text>
-                ) : null} */}
-              </Flex>
-              <Flex
-                sx={{
-                  maxWidth: "240px",
-                  width: "100%",
                   flexDirection: "column",
+                  width: "100%",
 
                   "@media screen and (min-width: 768px)": {
-                    maxWidth: "600px",
+                    marginRight: "1rem",
                   },
                 }}
               >
                 <Flex
                   sx={{
-                    padding: "0.5rem",
-                    backgroundImage: getGradient("rgb(255, 255, 255)"),
-                    maxWidth: "fit-content",
+                    flexDirection: "column",
+                    width: "100%",
+                    backgroundColor: "rgba(0,0,0,0.4)",
+                    padding: "2rem 4rem",
                     borderRadius: "5px",
-                    marginBottom: "0.5rem",
+                    marginBottom: "1rem",
                   }}
                 >
-                  <Tooltip title="Total NFTs staked">
-                    <Flex
-                      sx={{
-                        alignItems: "center",
-                        padding: "0 1rem",
-                      }}
-                    >
-                      <Image src={"/favicon.ico"} width="20" height="19.1" />
-                      <Text
-                        sx={{
-                          color: "#111111",
-                          marginLeft: "0.5rem",
-                          cursor: "help",
-                        }}
-                      >
-                        {" "}
-                        {totalStaked}
-                      </Text>
-                    </Flex>
-                  </Tooltip>
-                  <Tooltip title="TVL in SOL (totalStaked * floorPrice)">
-                    <Flex
-                      sx={{
-                        alignItems: "center",
-                        padding: "0 1rem",
-                      }}
-                    >
-                      <Text
-                        sx={{
-                          marginRight: "0.5rem",
-                          color: "#111111",
-                          cursor: 'help'
-                        }}
-                      >
-                        {(collectionData?.floorPrice * totalStaked) /
-                          LAMPORTS_PER_SOL}{" "}
-                      </Text>
-                      <SolanaIcon />
-                    </Flex>
-                  </Tooltip>
+                  <Heading
+                    sx={{
+                      fontFamily: "Quarry Bones",
+                      color: "primary",
+                    }}
+                  >
+                    Stake your Skully
+                  </Heading>
+                  <Text
+                    sx={{
+                      color: "primary",
+                    }}
+                  >
+                    Lock your DSkully to receive $SKULLY rewards. If your
+                    DSKully has the Essence attribute, rewards are doubled 🫡
+                  </Text>
                 </Flex>
-                <ProgressBar totalStaked={totalStaked} />
+                <Flex
+                  sx={{
+                    width: "100%",
+                    backgroundColor: "rgba(0,0,0,0.4)",
+                    padding: "2rem 4rem",
+                    borderRadius: "5px",
+                  }}
+                >
+                  <Flex
+                    sx={{
+                      flexDirection: "column",
+                      marginBottom: "0.5rem",
+                      width: "100%",
+                    }}
+                  >
+                    {/* Current user claimable rewards */}
+                    {rewardsCounter ? (
+                      <Flex
+                        sx={{
+                          width: "100%",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text
+                          sx={{
+                            color: "primary",
+                            opacity: 0.7,
+                          }}
+                        >
+                          User claimable rewards
+                        </Text>
+                        <Tooltip title="Total user rewards in $SKULL">
+                          <Flex
+                            sx={{
+                              alignItems: "center",
+                              justifyContent: "flex-end",
+                              padding: "0 1rem",
+                              minWidth: "150px",
+                            }}
+                          >
+                            <Text
+                              sx={{
+                                color: "primary",
+                                marginLeft: "0.5rem",
+                                cursor: "help",
+                                textAlign: "right",
+                              }}
+                            >
+                              {" "}
+                              {(rewardsCounter / 1e9).toFixed(4)} $SKULL
+                            </Text>
+                          </Flex>
+                        </Tooltip>
+                      </Flex>
+                    ) : null}
+                    {/* Current user rewards rate */}
+                    {farmerAccount ? (
+                      <Flex
+                        sx={{
+                          width: "100%",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text
+                          sx={{
+                            color: "primary",
+                            opacity: 0.7,
+                          }}
+                        >
+                          User rewards rate
+                        </Text>
+                        <Tooltip title="Daily user rewards in $SKULL">
+                          <Flex
+                            sx={{
+                              alignItems: "center",
+                              justifyContent: "flex-end",
+                              padding: "0 1rem",
+                              minWidth: "150px",
+                            }}
+                          >
+                            <Text
+                              sx={{
+                                color: "primary",
+                                marginLeft: "0.5rem",
+                                cursor: "help",
+                                textAlign: "right",
+                              }}
+                            >
+                              {" "}
+                              {(
+                                (farmerAccount?.totalRewardRate.toNumber() *
+                                  86400) /
+                                1e9
+                              ).toFixed(0)}{" "}
+                              $SKULL/day
+                            </Text>
+                          </Flex>
+                        </Tooltip>
+                      </Flex>
+                    ) : null}
+                    {/* Total NFTs staked */}
+                    <Flex
+                      sx={{
+                        width: "100%",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Text
+                        sx={{
+                          color: "primary",
+                          opacity: 0.7,
+                        }}
+                      >
+                        Total NFTs staked
+                      </Text>
+                      <Tooltip title="Total NFTs staked">
+                        <Flex
+                          sx={{
+                            alignItems: "center",
+                            padding: "0 1rem",
+                          }}
+                        >
+                          <Text
+                            sx={{
+                              color: "primary",
+                              marginRight: "0.5rem",
+                              cursor: "help",
+                            }}
+                          >
+                            {" "}
+                            {totalStaked}/5555
+                          </Text>
+                          <Image
+                            src={"/favicon.ico"}
+                            width="20"
+                            height="19.1"
+                          />
+                        </Flex>
+                      </Tooltip>
+                    </Flex>
+                    {/* TVL */}
+                    <Flex
+                      sx={{
+                        width: "100%",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Text
+                        sx={{
+                          color: "primary",
+                          opacity: 0.7,
+                        }}
+                      >
+                        Total Value Locked
+                      </Text>
+                      <Tooltip title="TVL in SOL (totalStaked * floorPrice)">
+                        <Flex
+                          sx={{
+                            alignItems: "center",
+                            padding: "0 1rem",
+                          }}
+                        >
+                          <Text
+                            sx={{
+                              marginRight: "0.5rem",
+                              color: "primary",
+                              cursor: "help",
+                            }}
+                          >
+                            {(collectionData?.floorPrice * totalStaked) /
+                              LAMPORTS_PER_SOL || "NaN"}{" "}
+                          </Text>
+                          <SolanaIcon />
+                        </Flex>
+                      </Tooltip>
+                    </Flex>
+                    {/* Total rewards emission */}
+                    <Flex
+                      sx={{
+                        width: "100%",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Text
+                        sx={{
+                          color: "primary",
+                          opacity: 0.7,
+                        }}
+                      >
+                        Total rewards emission
+                      </Text>
+                      <Tooltip title="Total token rewards emission">
+                        <Flex
+                          sx={{
+                            alignItems: "center",
+                            padding: "0 1rem",
+                          }}
+                        >
+                          <Text
+                            sx={{
+                              color: "primary",
+                              marginLeft: "0.5rem",
+                              cursor: "help",
+                            }}
+                          >
+                            {" "}
+                            {((totalRewardsEmission * 86400) / 1e9).toFixed(
+                              0
+                            )}{" "}
+                            $SKULL/day
+                          </Text>
+                        </Flex>
+                      </Tooltip>
+                    </Flex>
+                    {/* Average NFTs staked per user */}
+                    <Flex
+                      sx={{
+                        width: "100%",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Text
+                        sx={{
+                          color: "primary",
+                          opacity: 0.7,
+                        }}
+                      >
+                        Average NFTs staked per user
+                      </Text>
+                      <Tooltip title="totalNFTs / totalFarmers">
+                        <Flex
+                          sx={{
+                            alignItems: "center",
+                            padding: "0 1rem",
+                          }}
+                        >
+                          <Text
+                            sx={{
+                              color: "primary",
+                              marginRight: "0.5rem",
+                              cursor: "help",
+                            }}
+                          >
+                            {" "}
+                            {averageStakedAmount.toFixed(2)}
+                          </Text>
+                          <Image
+                            src={"/favicon.ico"}
+                            width="20"
+                            height="19.1"
+                          />
+                        </Flex>
+                      </Tooltip>
+                    </Flex>
+                  </Flex>
+                </Flex>
               </Flex>
               <Flex
                 sx={{
-                  flexDirection: "column",
+                  width: "100%",
+                  backgroundColor: "rgba(0,0,0,0.4)",
+                  padding: "2rem 0",
+                  borderRadius: "5px",
                   alignItems: "center",
                   justifyContent: "center",
+                  alignSelf: "stretch",
                 }}
               >
-                {rewardsCounter && orderedReceipts?.length ? (
-                  <Flex
-                    sx={{
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        backgroundColor: "lightgreen",
-                        borderRadius: "5px",
-                        width: "5px",
-                        height: "5px",
-                      }}
-                    ></Box>
-
-                    <Text
-                      sx={{
-                        fontSize: "1.2rem",
-                        marginLeft: "0.5rem",
-                      }}
-                    >
-                      {(rewardsCounter / 1e9).toFixed(5)} <Text>$SKULL</Text>
-                    </Text>
-                  </Flex>
-                ) : null}
-                <Button
-                  onClick={async () => {
-                    await claim()
-                    await fetchNFTs()
-                    await fetchReceipts()
-                  }}
-                >
-                  Claim rewards
-                </Button>
+                <Donut totalStaked={totalStaked} />
               </Flex>
             </Flex>
             {/* User wallet NFTs */}
