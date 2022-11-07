@@ -1,6 +1,6 @@
 /** @jsxImportSource theme-ui */
 import React, { useRef, useState } from "react"
-import { Button, Flex, Text } from "theme-ui"
+import { Button, Flex } from "theme-ui"
 
 import { DotsIcon } from "@/components/icons/"
 import useOutsideClick from "@/hooks/useOutsideClick"
@@ -47,6 +47,14 @@ const CollectionItem = (props: Props) => {
         outline: "none",
         cursor: onClick ? "pointer" : "auto",
         maxWidth: "16rem",
+        border: isSelected
+          ? "6px solid rgba(245, 244, 78, 1)"
+          : "6px solid rgba(206, 206, 206, 1)",
+        borderRadius: "5px",
+        backgroundColor: "rgba(206, 206, 206, 1)",
+        boxShadow: isSelected
+          ? "4px 4px 0 0 rgba(245, 244, 78, 0.5)"
+          : "4px 4px 0 0 rgba(206, 206, 206, 0.5)",
 
         "&:hover, &:focus, > .toggle-menu:focus": {
           "> .toggle-menu": {
@@ -65,12 +73,13 @@ const CollectionItem = (props: Props) => {
         sx={{
           display: "flex",
           position: "absolute",
-          visibility: isDropdownActive ? "visible" : "hidden",
           opacity: isDropdownActive ? 1 : 0,
           right: ".8rem",
           top: ".8rem",
           zIndex: 1,
           transition: "all .125s linear",
+          backgroundColor: "#000",
+          borderRadius: "100%",
 
           "&:hover, &:focus": {
             visibility: "visible",
@@ -83,7 +92,7 @@ const CollectionItem = (props: Props) => {
           sx={{
             width: "3.2rem",
             height: "3.2rem",
-            stroke: "heading",
+            stroke: "primary",
             strokeWidth: "2",
           }}
         />
@@ -97,15 +106,15 @@ const CollectionItem = (props: Props) => {
           flexDirection: "column",
           alignItems: "flex-start",
           padding: "2.4rem 1.2rem",
-          top: 40,
-          right: 0,
+          top: "40px",
+          right: "5px",
           backgroundColor: "background",
           transition: "all .125s linear",
           boxShadow: "0px 5px 5px rgba(0,0,0,0.25)",
           gap: ".8rem",
           zIndex: 2,
           fontSize: "1.2rem",
-          borderRadius: '5px',
+          borderRadius: "5px",
 
           a: {
             whiteSpace: "nowrap",
@@ -131,12 +140,13 @@ const CollectionItem = (props: Props) => {
         {additionalOptions || null}
       </Flex>
       <img
+        onClick={handleOnClick(item)}
         sx={{
-          borderRadius: "5px",
           transition: "all .5s linear",
-          opacity: isDropdownActive ? 0.7 : 1,
-          border: "3px solid transparent",
-          borderColor: isSelected ? "highlight" : "#111111",
+          opacity: isDropdownActive ? 0.5 : 1,
+          backgroundColor: "rgba(206, 206, 206, 1)",
+          borderRadius: "5px",
+          boxSizing: "border-box",
         }}
         src={externalMetadata.image}
       />
