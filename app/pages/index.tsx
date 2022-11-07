@@ -7,20 +7,18 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { NFTGallery } from "@/components/NFTGallery/NFTGallery"
 import CollectionItem from "@/components/NFTGallery/CollectionItem"
 import useWalletNFTs, { NFT } from "@/hooks/useWalletNFTs"
-import { Tab, TabList, TabPanel, Tabs } from "react-tabs"
 import useStaking from "@/hooks/useStaking"
 import WalletManager from "@/components/WalletManager/WalletManager"
 import { useTotalStaked } from "@/hooks/useTotalStaked"
-import ProgressBar from "@/components/ProgressBar/ProgressBar"
 import { Box } from "theme-ui"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { Toaster } from "react-hot-toast"
 import { LAMPORTS_PER_SOL } from "@solana/web3.js"
 import { SolanaIcon } from "@/components/icons/SolanaIcon"
 import Image from "next/image"
-import { getGradient } from "@/styles/theme"
 import { Tooltip } from "antd"
 import Donut from "@/components/Donut/Donut"
+
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect
 
@@ -56,7 +54,6 @@ export default function Home() {
   const [rewardsCounter, setRewardsCounter] = useState<number>(0)
   const [collectionData, setCollectionData] = useState<CollectionData>(null)
   const [chainData, setChainData] = useState(null)
-  console.log(chainData)
   const {
     farmerAccount,
     initFarmer,
