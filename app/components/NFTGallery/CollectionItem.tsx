@@ -11,10 +11,17 @@ type Props = {
   additionalOptions?: React.ReactElement
   onClick?: (item: NFT) => void
   className?: string
+  isSelected: boolean
 }
 
 const CollectionItem = (props: Props) => {
-  const { item, additionalOptions = null, className, onClick } = props
+  const {
+    item,
+    additionalOptions = null,
+    className,
+    onClick,
+    isSelected,
+  } = props
   const [isDropdownActive, setIsDropdownActive] = useState(false)
   const wrapperRef = useRef(null)
   useOutsideClick(wrapperRef, () => setIsDropdownActive(false))
@@ -44,7 +51,7 @@ const CollectionItem = (props: Props) => {
       sx={{
         flexDirection: "column",
         position: "relative",
-        transition: "all .125s linear",
+        transition: "all .25s linear",
         outline: "none",
         cursor: onClick ? "pointer" : "auto",
         maxWidth: "16rem",
@@ -53,10 +60,6 @@ const CollectionItem = (props: Props) => {
           "> .toggle-menu": {
             visibility: "visible",
             opacity: 1,
-          },
-
-          "> img": {
-            opacity: 0.7,
           },
         },
       }}
@@ -138,9 +141,11 @@ const CollectionItem = (props: Props) => {
       </Flex>
       <img
         sx={{
-          borderRadius: ".4rem",
-          transition: "all .125s linear",
+          borderRadius: "2rem",
+          transition: "all .5s linear",
           opacity: isDropdownActive ? 0.7 : 1,
+          border: "3px solid transparent",
+          borderColor: isSelected ? "highlight" : "#111111",
         }}
         src={externalMetadata.image}
       />

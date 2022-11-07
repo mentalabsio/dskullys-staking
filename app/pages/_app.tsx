@@ -11,6 +11,8 @@ import withGA from "next-ga"
 
 import defaultTheme from "../styles/theme"
 
+import "antd/dist/antd.css"
+
 const WalletProvider = dynamic(
   () => import("@/components/WalletProvider/WalletProvider"),
   {

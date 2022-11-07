@@ -13,9 +13,6 @@ const ProgressBar = ({ totalStaked }: ProgressBarProps) => {
         flexDirection: "column",
       }}
     >
-      <Text>
-        Total staked: <Text> {totalStaked}</Text>
-      </Text>
       <Flex
         sx={{
           width: "100%",
@@ -36,7 +33,7 @@ const ProgressBar = ({ totalStaked }: ProgressBarProps) => {
             height: "40px",
             borderTopLeftRadius: "10px",
             borderBottomLeftRadius: "10px",
-            backgroundColor: "highlight",
+            backgroundColor: "#fff",
             left: 0,
             top: 0,
             alignItems: "center",
@@ -49,7 +46,7 @@ const ProgressBar = ({ totalStaked }: ProgressBarProps) => {
           sx={{
             position: "absolute",
             right: "-5rem",
-            color: "highlight",
+            color: "#fff",
             fontWeight: "bold",
           }}
         >

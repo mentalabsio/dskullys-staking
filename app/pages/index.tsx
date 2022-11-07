@@ -15,6 +15,11 @@ import ProgressBar from "@/components/ProgressBar/ProgressBar"
 import { Box } from "theme-ui"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { Toaster } from "react-hot-toast"
+import { LAMPORTS_PER_SOL } from "@solana/web3.js"
+import { SolanaIcon } from "@/components/icons/SolanaIcon"
+import Image from "next/image"
+import { getGradient } from "@/styles/theme"
+import { Tooltip } from "antd"
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect
 
@@ -32,6 +37,14 @@ function useInterval(callback: () => void, delay: number) {
   }, [delay])
 }
 
+type CollectionData = {
+  avgPrice24hr: number
+  floorPrice: number
+  listedCount: number
+  symbol: string
+  volumeAll: number
+}
+
 export default function Home() {
   const { walletNFTs, fetchNFTs } = useWalletNFTs([
     "Eq1ZERQ7yqU7LFuD9mHeHKvZFT899r7wSYpqrZ52HWE6",
@@ -40,7 +53,9 @@ export default function Home() {
   const [selectedWalletItems, setSelectedWalletItems] = useState<NFT[]>([])
   const [selectedVaultItems, setSelectedVaultItems] = useState<NFT[]>([])
   const [rewardsCounter, setRewardsCounter] = useState<number>(0)
-
+  const [collectionData, setCollectionData] = useState<CollectionData>(null)
+  const [chainData, setChainData] = useState(null)
+  console.log(chainData)
   const {
     farmerAccount,
     initFarmer,
@@ -107,6 +122,38 @@ export default function Home() {
     setRewardsCounter(currentRewards)
   }, 1000)
 
+  useEffect(() => {
+    const fetchCollectionData = async () => {
+      try {
+        const data = await fetch(
+          "https://api-mainnet.magiceden.dev/v2/collections/dskullys/stats",
+          {
+            method: "GET",
+            mode: "cors",
+          }
+        )
+        const response = await data.json()
+        setCollectionData(response)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+
+    if (!collectionData) fetchCollectionData()
+  }, [collectionData])
+
+  useEffect(() => {
+    const fetchChainData = async () => {
+      const data = await fetch("https://api.solscan.io/chaininfo").then((res) =>
+        res.json()
+      )
+      setChainData(data)
+    }
+    if (!chainData) fetchChainData()
+  }, [chainData])
+
+  console.log(collectionData)
+
   return (
     <>
       <Head>
@@ -164,7 +211,6 @@ export default function Home() {
         <Heading
           mt="1rem"
           mb=".8rem"
-          variant="heading1"
           sx={{
             fontFamily: "Quarry Bones",
             fontSize: "32px",
@@ -219,12 +265,63 @@ export default function Home() {
                 sx={{
                   maxWidth: "240px",
                   width: "100%",
+                  flexDirection: "column",
 
                   "@media screen and (min-width: 768px)": {
                     maxWidth: "600px",
                   },
                 }}
               >
+                <Flex
+                  sx={{
+                    padding: "0.5rem",
+                    backgroundImage: getGradient("rgb(255, 255, 255)"),
+                    maxWidth: "fit-content",
+                    borderRadius: "30px",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  <Tooltip title="Total NFTs staked">
+                    <Flex
+                      sx={{
+                        alignItems: "center",
+                        padding: "0 1rem",
+                      }}
+                    >
+                      <Image src={"/favicon.ico"} width="20" height="19.1" />
+                      <Text
+                        sx={{
+                          color: "#111111",
+                          marginLeft: "0.5rem",
+                          cursor: "help",
+                        }}
+                      >
+                        {" "}
+                        {totalStaked}
+                      </Text>
+                    </Flex>
+                  </Tooltip>
+                  <Tooltip title="TVL in SOL (totalStaked * floorPrice)">
+                    <Flex
+                      sx={{
+                        alignItems: "center",
+                        padding: "0 1rem",
+                      }}
+                    >
+                      <Text
+                        sx={{
+                          marginRight: "0.5rem",
+                          color: "#111111",
+                          cursor: 'help'
+                        }}
+                      >
+                        {(collectionData?.floorPrice * totalStaked) /
+                          LAMPORTS_PER_SOL}{" "}
+                      </Text>
+                      <SolanaIcon />
+                    </Flex>
+                  </Tooltip>
+                </Flex>
                 <ProgressBar totalStaked={totalStaked} />
               </Flex>
               <Flex
@@ -344,7 +441,7 @@ export default function Home() {
                   <NFTGallery NFTs={walletNFTs}>
                     <>
                       {walletNFTs?.map((item) => {
-                        const isSelected = selectedWalletItems.find(
+                        const isSelected = selectedWalletItems.some(
                           (NFT) =>
                             NFT.onchainMetadata.mint ===
                             item.onchainMetadata.mint
@@ -363,14 +460,9 @@ export default function Home() {
                               key={item.onchainMetadata.mint}
                               item={item}
                               onClick={handleWalletItemClick}
+                              isSelected={isSelected}
                               sx={{
                                 maxWidth: "16rem",
-                                "> img": {
-                                  border: "3px solid transparent",
-                                  borderColor: isSelected
-                                    ? "highlight"
-                                    : "transparent",
-                                },
                               }}
                             />
                           </Flex>
@@ -431,7 +523,7 @@ export default function Home() {
                     <>
                       {orderedReceipts &&
                         orderedReceipts.map((stake) => {
-                          const isSelected = selectedVaultItems.find(
+                          const isSelected = selectedVaultItems.some(
                             (NFT) =>
                               NFT.onchainMetadata.mint ===
                               stake.metadata.onchainMetadata.mint
@@ -449,15 +541,10 @@ export default function Home() {
                               <CollectionItem
                                 sx={{
                                   maxWidth: "16rem",
-                                  "> img": {
-                                    border: "3px solid transparent",
-                                    borderColor: isSelected
-                                      ? "highlight"
-                                      : "transparent",
-                                  },
                                 }}
                                 onClick={handleVaultItemClick}
                                 item={stake.metadata}
+                                isSelected={isSelected}
                               />
                               {/* <Flex
                                 sx={{
