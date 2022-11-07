@@ -1,10 +1,10 @@
 /** @jsxImportSource theme-ui */
-import { useWallet } from "@solana/wallet-adapter-react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { Flex } from "theme-ui";
+import { useWallet } from "@solana/wallet-adapter-react"
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
+import { Flex } from "theme-ui"
 
 const WalletManager = () => {
-  const wallet = useWallet();
+  const wallet = useWallet()
 
   return (
     <Flex
@@ -27,50 +27,57 @@ const WalletManager = () => {
         {wallet?.publicKey ? (
           <WalletMultiButton
             sx={{
-              backgroundColor: "unset",
-              transition: "all .3s linear",
-              color: "text",
-              lineHeight: "body",
-              fontSize: "1.4rem",
-              padding: "0",
+              display: "flex",
+              color: "heading",
+              background: "primary",
+              border: "1px solid transparent",
+              transition: "all .125s linear",
+              alignItems: "center",
+              borderColor: "primary",
+              fontWeight: "normal",
+              borderRadius: "5px",
+              fontSize: "14px",
+              fontFamily: "primary",
+              padding: "8px 16px",
+              lineHeight: "inherit",
               height: "unset",
-              alignSelf: "flex-end",
-              borderRadius: '5px',
+
+              "&:not(:disabled):hover": {
+                cursor: "pointer",
+                color: "primary",
+                backgroundColor: "text",
+              },
 
               "&:hover": {
                 background: "unset",
                 backgroundImage: "unset!important",
-                backgroundColor: 'unset!important',
                 color: "primary",
                 cursor: "pointer",
-                opacity: 0.7
               },
             }}
           ></WalletMultiButton>
         ) : (
           <WalletMultiButton
             sx={{
-              backgroundColor: "unset",
-              color: "text",
-              lineHeight: "body",
-              fontSize: "1.4rem",
-              padding: ".8rem 1.6rem",
-              height: "unset",
-              alignSelf: "flex-end",
               display: "flex",
-              background: (theme) => theme.colors?.primaryGradient,
-              border: ".2rem solid transparent",
+              color: "heading",
+              background: "primary",
+              border: "1px solid transparent",
               transition: "all .125s linear",
               alignItems: "center",
               borderColor: "primary",
-              opacity: 1,
-                fontWeight: 500,
-              borderRadius: '5px',
+              fontWeight: "normal",
+              borderRadius: "5px",
+              fontSize: "14px",
+              fontFamily: "primary",
+              padding: "8px 16px",
+              lineHeight: "inherit",
+              height: "unset",
 
               "&:not(:disabled):hover": {
                 cursor: "pointer",
-                borderWidth: ".2rem",
-                opacity: 0.7,
+                color: "primary",
+                backgroundColor: 'text'
               },
 
               "&:disabled": {
@@ -83,7 +90,7 @@ const WalletManager = () => {
         )}
       </Flex>
     </Flex>
-  );
-};
+  )
+}
 
-export default WalletManager;
+export default WalletManager
