@@ -140,26 +140,6 @@ const CollectionItem = (props: Props) => {
         }}
         src={externalMetadata.image}
       />
-      <Text
-        variant="small"
-        sx={{
-          overflow: "hidden",
-          whiteSpace: "nowrap",
-          textOverflow: "ellipsis",
-          padding: "0 .8rem",
-          mt: ".8rem",
-        }}
-      >
-        {externalMetadata.name}
-        {/* <br />
-    <a
-      href={`https://solscan.io/token/${onchainMetadata.metaData.mint}`}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      {onchainMetadata.metaData.mint}
-    </a> */}
-      </Text>
     </Flex>
   )
 }
