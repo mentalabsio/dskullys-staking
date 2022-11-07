@@ -111,10 +111,11 @@ const CollectionItem = (props: Props) => {
           right: 0,
           backgroundColor: "background",
           transition: "all .125s linear",
-          boxShadow: "0px 4px 4px rgba(0,0,0,0.25)",
+          boxShadow: "0px 5px 5px rgba(0,0,0,0.25)",
           gap: ".8rem",
           zIndex: 2,
           fontSize: "1.2rem",
+          borderRadius: '5px',
 
           a: {
             whiteSpace: "nowrap",
@@ -141,7 +142,7 @@ const CollectionItem = (props: Props) => {
       </Flex>
       <img
         sx={{
-          borderRadius: "2rem",
+          borderRadius: "5px",
           transition: "all .5s linear",
           opacity: isDropdownActive ? 0.7 : 1,
           border: "3px solid transparent",

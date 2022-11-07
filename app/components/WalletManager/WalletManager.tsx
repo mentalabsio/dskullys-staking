@@ -35,6 +35,7 @@ const WalletManager = () => {
               padding: "0",
               height: "unset",
               alignSelf: "flex-end",
+              borderRadius: '5px',
 
               "&:hover": {
                 background: "unset",
@@ -63,7 +64,8 @@ const WalletManager = () => {
               alignItems: "center",
               borderColor: "primary",
               opacity: 1,
-              fontWeight: 500,
+                fontWeight: 500,
+              borderRadius: '5px',
 
               "&:not(:disabled):hover": {
                 cursor: "pointer",

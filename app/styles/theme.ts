@@ -68,6 +68,7 @@ const theme: Theme = {
       borderColor: "primary",
       opacity: 1,
       fontWeight: 500,
+      borderRadius: '5px',
 
       "&:not(:disabled):hover": {
         bg: "background",
@@ -111,7 +112,7 @@ const theme: Theme = {
       transform: "perspective(1px) translateZ(0)",
       position: "relative",
       background: "linear-gradient(45deg, rgb(22, 23, 23), grey)",
-      borderRadius: ".4rem",
+      borderRadius: "5px",
       boxShadow: "0 0 5px 2px #00000054",
       fontSize: "1.6rem",
       padding: "1.2rem 3.2rem",

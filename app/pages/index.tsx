@@ -277,7 +277,7 @@ export default function Home() {
                     padding: "0.5rem",
                     backgroundImage: getGradient("rgb(255, 255, 255)"),
                     maxWidth: "fit-content",
-                    borderRadius: "30px",
+                    borderRadius: "5px",
                     marginBottom: "0.5rem",
                   }}
                 >
@@ -341,7 +341,7 @@ export default function Home() {
                     <Box
                       sx={{
                         backgroundColor: "lightgreen",
-                        borderRadius: "30px",
+                        borderRadius: "5px",
                         width: "5px",
                         height: "5px",
                       }}

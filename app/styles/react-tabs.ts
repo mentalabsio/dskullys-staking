@@ -29,7 +29,6 @@ export const reactTabsStyles = {
   },
   ".react-tabs__tab--disabled": { color: "GrayText", cursor: "default" },
   ".react-tabs__tab:focus": {
-    boxShadow: "0 0 5px hsl(60, 89%, 63%)",
     borderColor: "background2",
     outline: "none",
   },
