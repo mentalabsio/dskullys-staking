@@ -184,6 +184,7 @@ export default function Home() {
       >
         <Box
           sx={{
+            display: "none",
             position: "fixed",
             left: "0",
             top: "0",
@@ -193,6 +194,10 @@ export default function Home() {
             minHeight: "100vh",
             opacity: 0.6,
             zIndex: 0,
+
+            "@media screen and (min-width: 768px)": {
+              display: "block",
+            },
           }}
         ></Box>
         <Toaster />
