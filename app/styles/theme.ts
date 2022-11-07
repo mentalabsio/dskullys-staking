@@ -5,7 +5,7 @@ import { reactTabsStyles } from "./react-tabs";
 
 export const getGradient = (rgb: string) => {
   /**
-   * Split RGB. Example: rgb(226, 217, 211)
+   * Split RGB. Example: rgb(17, 17, 17)
    * Then extract only numbers
    */
   const splitted = rgb.split(",").map((raw) => raw.replace(/\D/g, ""));
@@ -15,7 +15,7 @@ export const getGradient = (rgb: string) => {
 
 /**
  * rgb(84, 42, 147)
- * rgb(22, 23, 23)
+ * rgb(200,200,200)
  *
  */
 
@@ -23,22 +23,22 @@ const theme: Theme = {
   ...base,
   colors: {
     background: "rgb(24, 19, 19)",
-    text: "rgb(226, 217, 211)",
-    primary: "rgb(22, 23, 23)",
-    primaryGradient: getGradient("rgb(22, 23, 23)"),
-    heading: "rgb(226, 217, 211)",
+    text: "rgb(17, 17, 17)",
+    primary: "rgb(200,200,200)",
+    primaryGradient: getGradient("rgb(200,200,200)"),
+    heading: "rgb(17, 17, 17)",
     background2: "#1E1E24",
     backgroundGradient: getGradient("rgb(24, 19, 19)"),
     highlight: '#F5F44E',
     // modes: {
     //   light: {
-    //     background: "rgb(226, 217, 211)",
+    //     background: "rgb(17, 17, 17)",
     //     text: "rgb(24, 19, 19)",
-    //     primary: "rgb(22, 23, 23)",
-    //     primaryGradient: getGradient("rgb(22, 23, 23)"),
+    //     primary: "rgb(200,200,200)",
+    //     primaryGradient: getGradient("rgb(200,200,200)"),
     //     heading: "#1E1E24",
     //     background2: "#1E1E24",
-    //     backgroundGradient: getGradient("rgb(226, 217, 211)")
+    //     backgroundGradient: getGradient("rgb(17, 17, 17)")
     //   }
     // }
     error: "#B00020",
@@ -53,6 +53,7 @@ const theme: Theme = {
   },
 
   fonts: {
+    primary: 'AvertaStd-Regular, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
     heading:
       'AvertaStd-Bold, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
   },
@@ -61,7 +62,7 @@ const theme: Theme = {
     primary: {
       display: "flex",
       color: "heading",
-      background: (theme) => theme.colors?.primaryGradient,
+      background: 'primary',
       border: "1px solid transparent",
       transition: "all .125s linear",
       alignItems: "center",
@@ -74,7 +75,7 @@ const theme: Theme = {
         bg: "background",
         borderColor: "primary",
         cursor: "pointer",
-        opacity: 0.7,
+        color: 'primary',
       },
 
       "&:disabled": {
@@ -111,7 +112,7 @@ const theme: Theme = {
       color: "heading",
       transform: "perspective(1px) translateZ(0)",
       position: "relative",
-      background: "linear-gradient(45deg, rgb(22, 23, 23), grey)",
+      background: "linear-gradient(45deg, rgb(200,200,200), grey)",
       borderRadius: "5px",
       boxShadow: "0 0 5px 2px #00000054",
       fontSize: "1.6rem",
@@ -122,7 +123,7 @@ const theme: Theme = {
       transition: "all .125s linear",
 
       "&:not(:disabled):hover": {
-        background: "linear-gradient(225deg, rgb(22, 23, 23), grey)",
+        background: "linear-gradient(225deg, rgb(200,200,200), grey)",
         cursor: "pointer",
       },
 
@@ -249,7 +250,7 @@ const theme: Theme = {
         },
 
         "&:-webkit-any-link": {
-          color: "heading",
+          color: "primary",
           textDecoration: "none",
           transition: "all .125s linear",
 
