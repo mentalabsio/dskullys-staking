@@ -20,6 +20,7 @@ import { SolanaIcon } from "@/components/icons/SolanaIcon"
 import Image from "next/image"
 import { getGradient } from "@/styles/theme"
 import { Tooltip } from "antd"
+import Donut from "@/components/Donut/Donut"
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect
 
