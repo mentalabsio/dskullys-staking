@@ -36,9 +36,8 @@ const useStaking = () => {
    * Fetch all stake receipts
    */
   const fetchReceipts = useCallback(async () => {
-    const toastId = toast.loading("Fetching receipts...")
-
     if (publicKey) {
+      const toastId = toast.loading("Fetching receipts...")
       try {
         const farm = findFarmAddress({
           authority: farmAuthorityPubKey,
@@ -83,6 +82,8 @@ const useStaking = () => {
         }
         )
       }
+    } else {
+      setStakeReceipts([])
     }
   }, [publicKey])
 
@@ -90,41 +91,42 @@ const useStaking = () => {
    * Fetch farmer account
    */
   const fetchFarmer = useCallback(async () => {
-    const toastId = toast.loading("Fetching farmer...")
+    if (publicKey) {
+      const toastId = toast.loading("Fetching farmer...")
+      try {
+        const farm = findFarmAddress({
+          authority: farmAuthorityPubKey,
+          rewardMint,
+        })
 
-    try {
-      const farm = findFarmAddress({
-        authority: farmAuthorityPubKey,
-        rewardMint,
-      })
+        const farmer = findFarmerAddress({ farm, owner: publicKey })
 
-      const farmer = findFarmerAddress({ farm, owner: publicKey })
+        const farmerAccountData = await Farmer.fetch(connection, farmer)
 
-      const farmerAccountData = await Farmer.fetch(connection, farmer)
+        if (!farmerAccountData) {
+          setFarmerAccount(null)
 
-      if (!farmerAccountData) {
-        setFarmerAccount(null)
+          return true
+        }
 
-        return true
+        setFarmerAccount(farmerAccountData)
+
+        toast.success("Success!", {
+          id: toastId
+        })
+      } catch (e) {
+        toast.error("Something went wrong. " + (e.message ? e.message : e), {
+          id: toastId
+        })
       }
-
-      setFarmerAccount(farmerAccountData)
-
-      toast.success("Success!", {
-        id: toastId
-      })
-    } catch (e) {
-      toast.error("Something went wrong. " + (e.message ? e.message : e), {
-        id: toastId
-      })
+    } else {
+      setFarmerAccount(null)
     }
   }, [publicKey])
 
   useEffect(() => {
-    if (publicKey) {
-      fetchFarmer()
-      fetchReceipts()
-    }
+    fetchFarmer()
+    fetchReceipts()
   }, [publicKey])
 
   useEffect(() => {
