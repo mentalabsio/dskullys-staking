@@ -1,8 +1,7 @@
 /** @jsxImportSource theme-ui */
 
 import { Flex, Spinner, Text } from "@theme-ui/components"
-import useWalletNFTs, { NFT } from "@/hooks/useWalletNFTs"
-import CollectionItem from "@/components/NFTGallery/CollectionItem"
+import { NFT } from "@/hooks/useWalletNFTs"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { StakeReceiptWithMetadata } from "@/hooks/useStaking"
 
@@ -24,14 +23,17 @@ export function NFTGallery({ NFTs, children }: NFTCollectionProps) {
           <div
             sx={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr",
+              gridTemplateColumns: "1fr 1fr 1fr",
               gap: "1.6rem",
               alignItems: "center",
               maxHeight: "250px",
               overflowY: "scroll",
+              paddingRight: "2rem",
+              paddingBottom: "1rem",
+              marginBottom: "1rem",
 
               "@media (min-width: 768px)": {
-                gridTemplateColumns: "1fr 1fr 1fr 1fr",
+                gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr 1fr",
               },
 
               "&::-webkit-scrollbar": {
@@ -40,12 +42,12 @@ export function NFTGallery({ NFTs, children }: NFTCollectionProps) {
               },
 
               "&::-webkit-scrollbar-track": {
-                boxShadow: "inset 0 0 6px rgba(255, 255, 255, 0.3)",
+                boxShadow: "inset 0 0 6px rgba(255, 255, 255, 1)",
               },
 
               "&::-webkit-scrollbar-thumb": {
-                backgroundColor: (theme) => theme.colors?.primary,
-                outline: (theme) => `1px solid ${theme.colors?.primary}`,
+                backgroundColor: "#fff",
+                outline: "1px solid #f1f1f1",
               },
             }}
           >
