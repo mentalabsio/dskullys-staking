@@ -35,14 +35,6 @@ const CollectionItem = (props: Props) => {
   const { onchainMetadata, externalMetadata } = item
 
   const handleOnClick = (item: NFT) => () => onClick ? onClick(item) : true
-  const handleKeyDown =
-    (item: NFT) => (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (onClick && e.keyCode == 13) {
-        onClick(item)
-      }
-
-      return true
-    }
 
   return (
     <Flex
@@ -64,8 +56,6 @@ const CollectionItem = (props: Props) => {
         },
       }}
       className={className}
-      onClick={handleOnClick(item)}
-      onKeyDown={handleKeyDown(item)}
     >
       <Button
         tabIndex={1}
