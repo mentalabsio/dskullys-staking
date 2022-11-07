@@ -1,6 +1,5 @@
 import { useConnection } from "@solana/wallet-adapter-react"
 import { StakeReceipt } from "lib/gen/accounts"
-import { fromTxError } from "lib/gen/errors"
 import { findAllStakeReceipts } from "lib/utils"
 import { useCallback, useEffect, useState } from "react"
 
@@ -28,5 +27,13 @@ export const useTotalStaked = () => {
 
   const totalStaked = allStakeReceipts?.length
 
-  return { totalStaked }
+  const totalRewardsEmission = allStakeReceipts?.reduce((prev, receipt) => {
+    return prev + receipt.rewardRate.toNumber()
+  }, 0)
+
+  const averageStakedAmount = allStakeReceipts?.reduce((prev, current) => {
+    return prev + current.amount.toNumber()
+  }, 0) / allStakeReceipts?.length
+
+  return { totalStaked, totalRewardsEmission, averageStakedAmount }
 }
