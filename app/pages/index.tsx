@@ -251,8 +251,7 @@ export default function Home() {
                       color: "primary",
                     }}
                   >
-                    Lock your DSkully to receive $SKULLY rewards. If your
-                    DSKully has the Essence attribute, rewards are doubled 🫡
+                    Lock your DSkully to receive $SKULL token.
                   </Text>
                 </Flex>
                 <Flex
