@@ -12,11 +12,11 @@ import { NFT } from "./useWalletNFTs"
 import toast from 'react-hot-toast'
 
 const farmAuthorityPubKey = new web3.PublicKey(
-  "Eqbyn7MKgdFGtPcWwMq92X5t1RdYCGgi5mkPA66vJAQE"
+  "HqZhovM8SZX17umBcYoQdJnCJE3Xcg7SDLAbhQWTsnMS"
 )
 
 const rewardMint = new web3.PublicKey(
-  "CQn58YtdP7K1F2jpraozow9BrHhHHgiK6kgVNCpUbG5e"
+  "HARZxFoqt19wJMVXzGX1MBv1bqNVhTdZVJraDWmzYqGS"
 )
 
 export type StakeReceiptWithMetadata = StakeReceipt & {
