@@ -9,7 +9,6 @@ const WalletManager = () => {
   return (
     <Flex
       sx={{
-        alignSelf: "stretch",
         justifyContent: "center",
         alignItems: "center",
 
@@ -77,7 +76,7 @@ const WalletManager = () => {
               "&:not(:disabled):hover": {
                 cursor: "pointer",
                 color: "primary",
-                backgroundColor: 'text'
+                backgroundColor: "text",
               },
 
               "&:disabled": {
