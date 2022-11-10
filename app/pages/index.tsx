@@ -206,10 +206,11 @@ export default function Home() {
               margin: "3.2rem auto",
             }}
           >
+            {/* Chain info */}
             <Flex
               sx={{
                 flexDirection: "column",
-                alignItems: "flex-end",
+                alignItems: "flex-start",
                 justifyContent: "space-between",
                 margin: "0.5rem 0",
 
