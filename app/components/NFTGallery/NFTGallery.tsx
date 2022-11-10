@@ -38,6 +38,11 @@ export function NFTGallery({ NFTs, children }: NFTCollectionProps) {
 
               "&::-webkit-scrollbar": {
                 width: "1px",
+                display: NFTs.length > 1 ? "block" : "none",
+
+                "@media screen and (min-width: 768px)": {
+                  display: NFTs.length > 4 ? "block" : "none",
+                },
               },
 
               "&::-webkit-scrollbar-track": {
