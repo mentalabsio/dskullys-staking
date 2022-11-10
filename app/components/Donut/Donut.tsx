@@ -11,7 +11,7 @@ const chartOptions: ApexOptions = {
       breakpoint: 480,
       options: {
         chart: {
-          width: 300,
+          width: 285,
         },
         legend: {
           show: false,
@@ -22,7 +22,7 @@ const chartOptions: ApexOptions = {
       breakpoint: 4096,
       options: {
         chart: {
-          width: 300,
+          width: 285,
         },
         legend: {
           show: false,
