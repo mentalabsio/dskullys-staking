@@ -46,7 +46,7 @@ const CollectionItem = (props: Props) => {
         transition: "all .25s linear",
         outline: "none",
         cursor: onClick ? "pointer" : "auto",
-        maxWidth: "16rem",
+        maxWidth: "12rem",
         border: isSelected
           ? "6px solid rgba(245, 244, 78, 1)"
           : "6px solid rgba(206, 206, 206, 1)",
@@ -61,6 +61,10 @@ const CollectionItem = (props: Props) => {
             visibility: "visible",
             opacity: 1,
           },
+        },
+
+        "@media screen and (min-width: 768px)": {
+          maxWidth: "16rem",
         },
       }}
       className={className}
