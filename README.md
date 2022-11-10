@@ -6,6 +6,6 @@ Project Specs:
 - [ ] User can claim rewards
 
 # Mainnet deploy
-## farmId: `3ZY1Ee7gCJM5zDTQz2QzmF5wYgUBW8aYNVci1CM4F987`
-
+## test farmId: `3ZY1Ee7gCJM5zDTQz2QzmF5wYgUBW8aYNVci1CM4F987`
+## prod farmId: `7sP4L43YX1hc2UyueRSoeYNDrWY69ZcGRHZgXkurrBA1`
 
