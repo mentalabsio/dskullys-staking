@@ -105,7 +105,9 @@ const useStaking = () => {
 
         if (!farmerAccountData) {
           setFarmerAccount(null)
-
+          toast.success("Farmer account not found. Please register as staker.", {
+            id: toastId
+          })
           return true
         }
 
