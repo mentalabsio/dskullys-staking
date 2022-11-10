@@ -23,8 +23,8 @@ export function NFTGallery({ NFTs, children }: NFTCollectionProps) {
           <div
             sx={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: "1.6rem",
+              gridTemplateColumns: "1fr",
+              gap: "1rem",
               alignItems: "center",
               maxHeight: "250px",
               overflowY: "scroll",
@@ -33,12 +33,11 @@ export function NFTGallery({ NFTs, children }: NFTCollectionProps) {
               marginBottom: "1rem",
 
               "@media (min-width: 768px)": {
-                gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr 1fr",
+                gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
               },
 
               "&::-webkit-scrollbar": {
                 width: "1px",
-                display: NFTs.length > 4 ? "block" : "none",
               },
 
               "&::-webkit-scrollbar-track": {
