@@ -688,15 +688,17 @@ export default function Home() {
                   marginLeft: "2rem",
                 }}
               >
-                <Button
-                  onClick={async () => {
-                    await claim()
-                    await fetchNFTs()
-                    await fetchReceipts()
-                  }}
-                >
-                  Claim rewards
-                </Button>
+                {publicKey && farmerAccount?.accruedRewards ? (
+                  <Button
+                    onClick={async () => {
+                      await claim()
+                      await fetchNFTs()
+                      await fetchReceipts()
+                    }}
+                  >
+                    Claim rewards
+                  </Button>
+                ) : null}
                 <Button
                   onClick={async () => {
                     setSelectedVaultItems(
